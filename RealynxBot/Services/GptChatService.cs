@@ -67,10 +67,10 @@ namespace RealynxBot.Services {
 
             var queryContext = new List<ChatMessage> {
                 new SystemChatMessage($"Here are the google engine results for you to analyze. The search query was: '{effectiveQuery}'"),
-                new SystemChatMessage("Your objective is to summerize all of the data in the search results to provide an answer and or more context to the user's query."),
-                new SystemChatMessage("Make sure to use these links in your summerization to so the user may navigate to a result if you find it a high quality result."),
+                new SystemChatMessage("Your objective is to summarize all the data in the search results to provide an answer and or more context to the user's query."),
+                new SystemChatMessage("Make sure to use these links in your summarization to so the user may navigate to a result if you find it a high quality result."),
                 new SystemChatMessage("Your messages should be short and concise, you may not need to use every single search result. But keep in mind the results are in order of relevance."),
-                new SystemChatMessage("The results may be empty, if they are, inform the user of the lack of information on google for that search term."),
+                new SystemChatMessage("The results may be empty, if they are, inform the user of the lack of information on Google for that search term."),
                 new SystemChatMessage("The remaining system directives are information for your personality.")
             };
             queryContext.AddRange(_openAiConfig.ChatBotSystemMessages.Select(i => new SystemChatMessage(i)));
@@ -111,10 +111,10 @@ namespace RealynxBot.Services {
 
         private async Task<string> ImproveQuery(string query) {
             var queryContext = new List<ChatMessage> {
-                new SystemChatMessage("The user is attempting to craft a google search query."),
-                new SystemChatMessage("sometimes the user could be asking you to create a google query from a prompt, form a query to find results that best answer their prompt in these cases."),
+                new SystemChatMessage("The user is attempting to craft a Google search query."),
+                new SystemChatMessage("sometimes the user could be asking you to create a Google query from a prompt, form a query to find results that best answer their prompt in these cases."),
                 new SystemChatMessage("Your response will be used as the search query parameter in google, the raw value from your response will be used only use quotes or other features if you are intending to use advanced search features."),
-                new SystemChatMessage("You have access to all the advanced search features in google. But DONT use quotes for exact seach terms unless that is what the user wants explicitly. Most queries should be un-quoted sarch terms."),
+                new SystemChatMessage("You have access to all the advanced search features in Google. But DON'T use quotes for exact each terms unless that is what the user wants explicitly. Most queries should be un-quoted search terms."),
                 new UserChatMessage(query)
             };
 
