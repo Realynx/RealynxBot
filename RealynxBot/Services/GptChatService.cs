@@ -92,7 +92,7 @@ namespace RealynxBot.Services {
                 stringBuilder.AppendLine($"Description: {result.Snippet}");
 
                 var websiteTextualContent = await _websiteContentService.GrabSiteContent(result.Link, 3500);
-                _logger.Debug(websiteTextualContent);
+                _logger.Debug($"{result.Link}\n{websiteTextualContent}");
                 stringBuilder.AppendLine($"Body Text Content: {websiteTextualContent}");
                 siteResetEvent.Set();
 
