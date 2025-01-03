@@ -10,7 +10,7 @@ namespace RealynxBot {
                 .UseStartup<Startup>()
                 .Build();
 
-            host.Run();
+            await host.RunAsync();
         }
     }
 }
