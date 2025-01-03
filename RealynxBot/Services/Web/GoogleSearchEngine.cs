@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-using Google.Apis.CustomSearchAPI.v1;
+﻿using Google.Apis.CustomSearchAPI.v1;
 using Google.Apis.CustomSearchAPI.v1.Data;
 
 using RealynxBot.Models.Config;
@@ -23,20 +21,14 @@ namespace RealynxBot.Services.Web {
             };
 
             var results = new List<Result>();
-            var currentResultOffset = 0;
-            for (var x = 0; x < 1; x++) {
-                var search = new CustomSearchAPIService(cfg);
-                var listRequest = search.Cse.List();
-                listRequest.Q = searchQuery;
-                listRequest.Cx = _googleApiConfig.CustomSearchEngineId;
-                listRequest.Start = currentResultOffset;
 
-                var searchResult = await listRequest.ExecuteAsync();
-                results.AddRange(searchResult?.Items is null ? Array.Empty<Result>() : searchResult.Items.ToArray());
-                if (results.Count == 0) {
-                    break;
-                }
-            }
+            var search = new CustomSearchAPIService(cfg);
+            var listRequest = search.Cse.List();
+            listRequest.Q = searchQuery;
+            listRequest.Cx = _googleApiConfig.CustomSearchEngineId;
+
+            var searchResult = await listRequest.ExecuteAsync();
+            results.AddRange(searchResult?.Items is null ? Array.Empty<Result>() : searchResult.Items.ToArray());
 
             _logger.Info($"Got {results.Count} search result items.");
             return results.ToArray();

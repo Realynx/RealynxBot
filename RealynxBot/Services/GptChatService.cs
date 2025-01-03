@@ -14,7 +14,8 @@ namespace RealynxBot.Services {
         private readonly IGoogleSearchEngine _googleSearchEngine;
         private readonly IWebsiteContentService _websiteContentService;
 
-        private ChatClient _chatClient;
+        private ChatClient _chatClientGpt;
+        private ChatClient _chatClientInterpreter;
         private List<ChatMessage> _chatHistory = new();
 
         public GptChatService(OpenAiConfig openAiConfig, ILogger logger, IGoogleSearchEngine googleSearchEngine, IWebsiteContentService websiteContentService) {
@@ -22,7 +23,8 @@ namespace RealynxBot.Services {
             _logger = logger;
             _googleSearchEngine = googleSearchEngine;
             _websiteContentService = websiteContentService;
-            _chatClient = new(_openAiConfig.ModelId, _openAiConfig.ApiKey);
+            _chatClientGpt = new(_openAiConfig.GptModelId, _openAiConfig.ApiKey);
+            _chatClientInterpreter = new(_openAiConfig.InterpreterModelId, _openAiConfig.ApiKey);
 
             _chatHistory.Add(new SystemChatMessage("Chat messages will be prefixed with the user's discord name; in example 'Poofyfox: [message prompt]'. On a second note DO NOT PING EVERYONE, or any other group. You can ping indavidual users though."));
             _chatHistory.AddRange(openAiConfig.ChatBotSystemMessages.Select(i => new SystemChatMessage(i)));
@@ -34,7 +36,7 @@ namespace RealynxBot.Services {
             PruneContextHistory();
             _chatHistory.Add(new UserChatMessage($"{username}: {prompt}"));
 
-            var chatCompletion = await _chatClient.CompleteChatAsync(_chatHistory, new ChatCompletionOptions() {
+            var chatCompletion = await _chatClientGpt.CompleteChatAsync(_chatHistory, new ChatCompletionOptions() {
                 MaxOutputTokenCount = 375
             });
             var chatMessage = chatCompletion.Value.Content.First().Text;
@@ -83,7 +85,7 @@ namespace RealynxBot.Services {
                 queryContext.Add(new SystemChatMessage(stringBuilder.ToString()));
             }
 
-            var chatCompletion = await _chatClient.CompleteChatAsync(queryContext, new ChatCompletionOptions() {
+            var chatCompletion = await _chatClientInterpreter.CompleteChatAsync(queryContext, new ChatCompletionOptions() {
                 MaxOutputTokenCount = 375
             });
             var chatMessage = chatCompletion.Value.Content.First().Text;
@@ -96,11 +98,11 @@ namespace RealynxBot.Services {
                 new SystemChatMessage("The user is attempting to craft a google search query, improve this query to accuractly search google and meet the user's needs."),
                 new SystemChatMessage("sometimes the user could be asking you to create a google query from a prompt, form a query to find results that best answer their prompt in these cases."),
                 new SystemChatMessage("Your response will be used as the search query parameter in google, the raw value from your response will be used only use quotes or other features if you are intending to use advanced search features."),
-                new SystemChatMessage("You have access to all the advanced search features in google."),
+                new SystemChatMessage("You have access to all the advanced search features in google. But don't use Exact seach terms with quotes unless that is what the user wants explicitly."),
                 new UserChatMessage(query)
             };
 
-            var chatCompletion = await _chatClient.CompleteChatAsync(queryContext, new ChatCompletionOptions() {
+            var chatCompletion = await _chatClientInterpreter.CompleteChatAsync(queryContext, new ChatCompletionOptions() {
                 Temperature = 0,
                 MaxOutputTokenCount = 50
             });
