@@ -100,6 +100,7 @@ namespace RealynxBot.Services {
             });
 
             queryContext.AddRange(resultContexts);
+            _logger.Info("Finished content extraction");
 
             var chatCompletion = await _chatClientInterpreter.CompleteChatAsync(queryContext, new ChatCompletionOptions() {
                 MaxOutputTokenCount = 375
