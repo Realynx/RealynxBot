@@ -13,6 +13,8 @@ namespace RealynxBot.Services.Discord.Commands {
             _logger = logger;
         }
 
+        [CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]
+        [IntegrationType(ApplicationIntegrationType.GuildInstall | ApplicationIntegrationType.UserInstall)]
         [SlashCommand("gpt", "Replies with AI reponse from GPT.")]
         public async Task PromptAi(string prompt) {
             await DeferAsync();
@@ -27,6 +29,8 @@ namespace RealynxBot.Services.Discord.Commands {
             }
         }
 
+        [CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]
+        [IntegrationType(ApplicationIntegrationType.GuildInstall | ApplicationIntegrationType.UserInstall)]
         [SlashCommand("google", "Uses GPT AI to query google and provide comprehensive results.")]
         public async Task SearchGoogle(string query) {
             await DeferAsync();
@@ -39,11 +43,6 @@ namespace RealynxBot.Services.Discord.Commands {
                 await FollowupAsync("There was an error with OpenAI API.");
                 _logger.Error($"Error: {e}");
             }
-        }
-
-        [UserCommand("test")]
-        public async Task UserTest(IUser a) {
-            Console.WriteLine("thing");
         }
     }
 }
