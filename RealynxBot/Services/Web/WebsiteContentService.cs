@@ -83,8 +83,9 @@ namespace RealynxBot.Services.Web {
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(websiteContent);
 
-            var nodes = htmlDoc.DocumentNode.SelectNodes("//body//*");
-            // header, footer, 
+            var nodes = htmlDoc.DocumentNode.SelectNodes("//article") ??
+                     htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'main-content')]") ??
+                     htmlDoc.DocumentNode.SelectNodes("//body//*");
 
             var contentBuilder = new StringBuilder();
             foreach (var node in nodes) {

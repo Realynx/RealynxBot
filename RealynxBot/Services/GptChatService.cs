@@ -69,7 +69,7 @@ namespace RealynxBot.Services {
                 new SystemChatMessage($"Here are the google engine results for you to analyze. The search query was: '{effectiveQuery}'"),
                 new SystemChatMessage("Your objective is to summarize all the data in the search results to provide an answer and or more context to the user's query."),
                 new SystemChatMessage("Make sure to use these links in your summarization to so the user may navigate to a result if you find it a high quality result."),
-                new SystemChatMessage("Your messages should be short and concise, you may not need to use every single search result. But keep in mind the results are in order of relevance."),
+                new SystemChatMessage("Your messages should be short and concise. Keep in mind the results are in order of relevance."),
                 new SystemChatMessage("The results may be empty, if they are, inform the user of the lack of information on Google for that search term."),
                 new SystemChatMessage("The remaining system directives are information for your personality.")
             };
@@ -87,7 +87,8 @@ namespace RealynxBot.Services {
                 stringBuilder.AppendLine($"Link: {result.Link}");
                 stringBuilder.AppendLine($"Description: {result.Snippet}");
 
-                var websiteTextualContent = await _websiteContentService.GrabSiteContent(result.Link, 2500);
+                var websiteTextualContent = await _websiteContentService.GrabSiteContent(result.Link, 3500);
+                _logger.Debug(websiteTextualContent);
                 stringBuilder.AppendLine($"Body Text Content: {websiteTextualContent}");
                 siteResetEvent.Set();
 
