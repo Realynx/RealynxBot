@@ -53,8 +53,6 @@ namespace RealynxBot.Services.Discord.Commands {
         private Task DiscordSocketClient_Log(LogMessage arg) {
             switch (arg.Severity) {
                 case LogSeverity.Critical:
-                    _logger.Error(arg.Message);
-                    break;
                 case LogSeverity.Error:
                     _logger.Error(arg.Message);
                     break;
@@ -65,8 +63,6 @@ namespace RealynxBot.Services.Discord.Commands {
                     _logger.Info(arg.Message);
                     break;
                 case LogSeverity.Verbose:
-                    _logger.Debug(arg.Message);
-                    break;
                 case LogSeverity.Debug:
                     _logger.Debug(arg.Message);
                     break;

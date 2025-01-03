@@ -90,7 +90,7 @@ namespace RealynxBot {
             Console.WriteLine("Waiting for discord gateway ready.");
             _manualResetEvent.WaitOne();
 
-            Console.WriteLine("Disord gateway is ready...");
+            Console.WriteLine("Discord gateway is ready...");
         }
 
         private Task SocketClient_Ready() {
