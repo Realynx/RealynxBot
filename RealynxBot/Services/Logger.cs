@@ -145,6 +145,7 @@ namespace RealynxBot.Services {
                     _logWriter.Write(timeStamp);
                     _logWriter.Write(' ');
                     _logWriter.WriteLine(log);
+                    _logWriter.Flush();
                 }
             }
         }
