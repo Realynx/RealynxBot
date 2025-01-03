@@ -99,12 +99,11 @@ namespace RealynxBot.Services.Discord {
                         return true;
                     }
 
-                    var isGuildEmote = reactedEmote is Emote;
-                    if (!isGuildEmote || !Emote.TryParse(configEmote.Value, out var customEmote)) {
+                    if (reactedEmote is not Emote gildEmote || !Emote.TryParse(configEmote.Value, out _)) {
                         return false;
                     }
 
-                    var customEmoteId = $"<:{reactedEmote.Name}:{(reactedEmote as Emote).Id}>";
+                    var customEmoteId = $"<:{reactedEmote.Name}:{gildEmote.Id}>";
                     return configEmote.Value == customEmoteId;
                 }).Key;
         }
