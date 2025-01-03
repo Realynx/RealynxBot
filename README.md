@@ -1,2 +1,2 @@
-# RealynxBot
-Discord bot for realynx community server.
+# RealLoaderBot
+The discord bot for RealLoader Community.
