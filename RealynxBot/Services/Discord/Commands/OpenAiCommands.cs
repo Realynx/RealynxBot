@@ -24,7 +24,7 @@ namespace RealynxBot.Services.Discord.Commands {
                 await FollowupAsync(gptResponse);
             }
             catch (Exception e) {
-                await FollowupAsync("There was an error with OpenAI API.");
+                await FollowupAsync("There was an error.");
                 _logger.Error($"Error: {e}");
             }
         }
@@ -40,7 +40,7 @@ namespace RealynxBot.Services.Discord.Commands {
                 var sentMessage = await FollowupAsync(gptResponse);
             }
             catch (Exception e) {
-                await FollowupAsync("There was an error with OpenAI API.");
+                await FollowupAsync("There was an error.");
                 _logger.Error($"Error: {e}");
             }
         }

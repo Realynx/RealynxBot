@@ -95,10 +95,10 @@ namespace RealynxBot.Services {
 
         private async Task<string> ImproveQuery(string query) {
             var queryContext = new List<ChatMessage> {
-                new SystemChatMessage("The user is attempting to craft a google search query, improve this query to accuractly search google and meet the user's needs."),
+                new SystemChatMessage("The user is attempting to craft a google search query."),
                 new SystemChatMessage("sometimes the user could be asking you to create a google query from a prompt, form a query to find results that best answer their prompt in these cases."),
                 new SystemChatMessage("Your response will be used as the search query parameter in google, the raw value from your response will be used only use quotes or other features if you are intending to use advanced search features."),
-                new SystemChatMessage("You have access to all the advanced search features in google. But don't use Exact seach terms with quotes unless that is what the user wants explicitly."),
+                new SystemChatMessage("You have access to all the advanced search features in google. But DONT use quotes for exact seach terms unless that is what the user wants explicitly. Most queries should be un-quoted sarch terms."),
                 new UserChatMessage(query)
             };
 
