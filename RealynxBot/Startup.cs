@@ -77,7 +77,7 @@ namespace RealynxBot {
         private void SetupDiscordSingletons(out DiscordSocketClient socketClient) {
             socketClient = new DiscordSocketClient(new DiscordSocketConfig {
                 LogGatewayIntentWarnings = true,
-                GatewayIntents = GatewayIntents.All,
+                GatewayIntents = GatewayIntents.All ^ GatewayIntents.GuildPresences ^ GatewayIntents.GuildScheduledEvents ^ GatewayIntents.GuildInvites,
                 LogLevel = LogSeverity.Verbose,
                 MaxWaitBetweenGuildAvailablesBeforeReady = 250,
             });
