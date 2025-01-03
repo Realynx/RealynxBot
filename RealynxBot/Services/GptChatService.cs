@@ -1,5 +1,7 @@
 ﻿using System.Text;
 
+using Google.Apis.CustomSearchAPI.v1.Data;
+
 using OpenAI.Chat;
 
 using RealynxBot.Models.Config;
@@ -73,7 +75,13 @@ namespace RealynxBot.Services {
             };
             queryContext.AddRange(_openAiConfig.ChatBotSystemMessages.Select(i => new SystemChatMessage(i)));
 
-            foreach (var result in results) {
+            var siteResetEvents = results.ToDictionary(GetDomainNameWithTld, _ => new ManualResetEventSlim(true));
+            var resultContexts = new SystemChatMessage[results.Length];
+            await Parallel.ForEachAsync(results.Index(), async (tuple, cancellationToken) => {
+                var result = tuple.Item;
+                var siteResetEvent = siteResetEvents[GetDomainNameWithTld(result)];
+
+                siteResetEvent.Wait(cancellationToken);
                 var stringBuilder = new StringBuilder();
                 stringBuilder.AppendLine($"Title: {result.Title}");
                 stringBuilder.AppendLine($"Link: {result.Link}");
@@ -81,9 +89,12 @@ namespace RealynxBot.Services {
 
                 var websiteTextualContent = await _websiteContentService.GrabSiteContent(result.Link, 2500);
                 stringBuilder.AppendLine($"Body Text Content: {websiteTextualContent}");
+                siteResetEvent.Set();
 
-                queryContext.Add(new SystemChatMessage(stringBuilder.ToString()));
-            }
+                resultContexts[tuple.Index] = new SystemChatMessage(stringBuilder.ToString());
+            });
+
+            queryContext.AddRange(resultContexts);
 
             var chatCompletion = await _chatClientInterpreter.CompleteChatAsync(queryContext, new ChatCompletionOptions() {
                 MaxOutputTokenCount = 375
@@ -91,6 +102,11 @@ namespace RealynxBot.Services {
             var chatMessage = chatCompletion.Value.Content.First().Text;
 
             return chatMessage;
+        }
+
+        private static string GetDomainNameWithTld(Result result) {
+            var split = result.DisplayLink.Split('.');
+            return $"{split[^2]}.{split[^1]}";
         }
 
         private async Task<string> ImproveQuery(string query) {
