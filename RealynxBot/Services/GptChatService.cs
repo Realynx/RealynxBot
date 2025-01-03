@@ -75,7 +75,11 @@ namespace RealynxBot.Services {
             };
             queryContext.AddRange(_openAiConfig.ChatBotSystemMessages.Select(i => new SystemChatMessage(i)));
 
-            var siteResetEvents = results.ToDictionary(GetDomainNameWithTld, _ => new ManualResetEventSlim(true));
+            var siteResetEvents = results
+                .Select(GetDomainNameWithTld)
+                .Distinct().
+                ToDictionary(x => x, _ => new ManualResetEventSlim(true));
+
             var resultContexts = new SystemChatMessage[results.Length];
             await Parallel.ForEachAsync(results.Index(), async (tuple, cancellationToken) => {
                 var result = tuple.Item;
