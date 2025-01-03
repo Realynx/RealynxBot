@@ -27,7 +27,7 @@ namespace RealynxBot.Services.Discord.Commands {
             }
         }
 
-        [SlashCommand("google", "Uses GPT Ai to query google and provide comprehensive results.")]
+        [SlashCommand("google", "Uses GPT AI to query google and provide comprehensive results.")]
         public async Task SearchGoogle(string query) {
             await DeferAsync();
 
@@ -39,6 +39,11 @@ namespace RealynxBot.Services.Discord.Commands {
                 await FollowupAsync("There was an error with OpenAI API.");
                 _logger.Error($"Error: {e}");
             }
+        }
+
+        [UserCommand("test")]
+        public async Task UserTest(IUser a) {
+            Console.WriteLine("thing");
         }
     }
 }
