@@ -44,7 +44,7 @@ namespace RealynxBot.Services.Discord {
         }
 
         private static IEmote ParseEmote(string emoteString) {
-            return emoteString.Contains(":") ? Emote.Parse(emoteString) : new Emoji(emoteString);
+            return emoteString.Contains(':') ? Emote.Parse(emoteString) : new Emoji(emoteString);
         }
 
         private async Task DiscordSocketClient_ReactionAdded(Cacheable<IUserMessage, ulong> cacheableMessage,
@@ -55,7 +55,7 @@ namespace RealynxBot.Services.Discord {
             }
 
             await TriggerEmoteAction(userMessage, socketReaction, async (roleId, reactingGuildUser) => {
-                if (!reactingGuildUser.Roles.Any(i => i.Id == roleId)) {
+                if (reactingGuildUser.Roles.All(i => i.Id != roleId)) {
                     await reactingGuildUser.AddRoleAsync(roleId);
                 }
             });
@@ -75,7 +75,7 @@ namespace RealynxBot.Services.Discord {
             });
         }
 
-        private async Task TriggerEmoteAction(IUserMessage userMessage, SocketReaction socketReaction, Action<ulong, SocketGuildUser> onValidEmote) {
+        private async Task TriggerEmoteAction(IUserMessage userMessage, SocketReaction socketReaction, Func<ulong, SocketGuildUser, Task> onValidEmote) {
             if (_roleWatcherConfig.WatchedMessages.Any(i => i.MessageId == userMessage.Id)) {
                 var roleConfig = _roleWatcherConfig.WatchedMessages.Single(i => i.MessageId == userMessage.Id);
 
@@ -88,7 +88,7 @@ namespace RealynxBot.Services.Discord {
 
                 var guild = _discordSocketClient.GetGuild(roleConfig.GuildId);
                 var reactingGuildUser = guild.GetUser(socketReaction.User.Value.Id);
-                onValidEmote.Invoke(roleId, reactingGuildUser);
+                await onValidEmote.Invoke(roleId, reactingGuildUser);
             }
         }
 

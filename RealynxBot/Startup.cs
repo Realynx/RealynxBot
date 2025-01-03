@@ -62,7 +62,7 @@ namespace RealynxBot {
             services
                 .AddHttpClient<WebsiteContentService>(client => {
                     client.DefaultRequestHeaders.UserAgent.Clear();
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd("RealLynx_DiscordBot/1.0 (Windows; Linux; https://github.com/Realynx)");
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("Realynx_DiscordBot/1.0 (Windows; Linux; https://github.com/Realynx)");
                     client.Timeout = TimeSpan.FromSeconds(2);
                 })
                 .AddPolicyHandler(GetRetryPolicy());
