@@ -1,10 +1,9 @@
 ﻿using Discord.WebSocket;
 
-
 using RealynxBot.Services.Discord.Interfaces;
 using RealynxBot.Services.Interfaces;
 
-namespace RealynxBot.Discord {
+namespace RealynxBot.Services.Discord {
     public class DiscordNotificationService : IDiscordNotificationService {
         private readonly ILogger _logger;
         private readonly DiscordSocketClient _discordSocketClient;
@@ -28,7 +27,6 @@ namespace RealynxBot.Discord {
         private async Task UpdateLoop() {
             for (; ; ) {
                 _logger.Debug("Updating game status");
-
 
                 await _discordSocketClient.SetGameAsync("UwU");
                 Thread.Sleep(TimeSpan.FromSeconds(30));

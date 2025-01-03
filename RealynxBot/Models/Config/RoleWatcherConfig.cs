@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace RealynxBot.Config {
+namespace RealynxBot.Models.Config {
     public class RoleWatcherConfig {
 
         public WatchedMessage[] WatchedMessages { get; set; }

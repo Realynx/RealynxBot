@@ -1,10 +1,11 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
-using RealynxBot.Config;
+using RealynxBot.Models.Config;
+using RealynxBot.Services.Discord.Interfaces;
 using RealynxBot.Services.Interfaces;
 
-namespace RealynxBot.Discord.Services {
+namespace RealynxBot.Services.Discord {
     public class UserRoleWatcherService : IUserRoleWatcherService {
         private readonly ILogger _logger;
         private readonly DiscordSocketClient _discordSocketClient;

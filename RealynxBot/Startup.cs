@@ -12,12 +12,11 @@ using Microsoft.Extensions.Hosting;
 using Polly;
 using Polly.Extensions.Http;
 
-using RealynxBot.Config;
-using RealynxBot.Discord;
-using RealynxBot.Discord.Services;
 using RealynxBot.Interfaces;
 using RealynxBot.Models.Config;
 using RealynxBot.Services;
+using RealynxBot.Services.Discord;
+using RealynxBot.Services.Discord.Commands;
 using RealynxBot.Services.Discord.Interfaces;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.Web;

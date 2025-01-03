@@ -5,10 +5,10 @@ using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
 
-using RealynxBot.Discord.Services;
+using RealynxBot.Services.Discord.Interfaces;
 using RealynxBot.Services.Interfaces;
 
-namespace RealynxBot.Services {
+namespace RealynxBot.Services.Discord.Commands {
     public class CommandHandlerService : ICommandHandlerService {
 
         private readonly CommandService _commandService;
