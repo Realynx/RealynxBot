@@ -15,8 +15,9 @@ namespace RealynxBot.Services {
     public class Logger : ILogger {
         public LogLevel Level { get; set; }
 
-        private readonly string _logLocation;
         private readonly LoggerConfig _loggerConfig;
+        private readonly StreamWriter? _logWriter;
+        private readonly Lock _logLock = new();
 
         private string TimeStamp {
             get {
@@ -24,15 +25,15 @@ namespace RealynxBot.Services {
             }
         }
 
+
         public Logger(LoggerConfig loggerConfig) {
             _loggerConfig = loggerConfig;
-            _logLocation = loggerConfig.LogFile;
+            var logLocation = loggerConfig.LogFile;
 
             Level = LogLevel.Info | LogLevel.Warnings | LogLevel.Errors;
 
             if (loggerConfig.WriteFile) {
-                // TODO: Keep backup of last 5-10 log files instead of erasing the current file
-                File.WriteAllText(_logLocation, null);
+                _logWriter = new StreamWriter(logLocation, false);
             }
 
             if (loggerConfig.DebugLogs) {
@@ -117,33 +118,34 @@ namespace RealynxBot.Services {
             }
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         private void LogOutput(ConsoleColor color, string log, string classFile, int lineNumber, string callerName) {
-            // If the binary was compiled on windows the constant class filenames will have windows path seperators, and vice versa for linux.
-            // So we must check for this manually.
-            var directorySeparatorChar = classFile.Contains('/') ? '/' : '\\';
+            lock (_logLock) {
+                // If the binary was compiled on windows the constant class filenames will have windows path separators, and vice versa for linux.
+                // So we must check for this manually.
+                var directorySeparatorChar = classFile.Contains('/') ? '/' : '\\';
 
-            var className = classFile;
-            if (className.Contains(directorySeparatorChar)) {
-                className = className.Split(directorySeparatorChar)[^1];
-            }
-            className = Path.GetFileNameWithoutExtension(className);
+                var className = classFile;
+                if (className.Contains(directorySeparatorChar)) {
+                    className = className.Split(directorySeparatorChar)[^1];
+                }
 
-            var timeStamp = $"[{TimeStamp}]";
+                className = Path.GetFileNameWithoutExtension(className);
 
-            var logPreamble = $"{timeStamp}[{className}::{callerName};{lineNumber}]: ";
+                var timeStamp = $"[{TimeStamp}]";
 
-            Console.ForegroundColor = color;
-            Console.Write(logPreamble);
+                var logPreamble = $"{timeStamp}[{className}::{callerName};{lineNumber}]: ";
 
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.WriteLine(log);
+                Console.ForegroundColor = color;
+                Console.Write(logPreamble);
 
-            if (_loggerConfig.WriteFile) {
-                using var sw = File.AppendText(_logLocation);
-                sw.Write(timeStamp);
-                sw.Write(' ');
-                sw.WriteLine(log);
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine(log);
+
+                if (_loggerConfig.WriteFile && _logWriter is not null) {
+                    _logWriter.Write(timeStamp);
+                    _logWriter.Write(' ');
+                    _logWriter.WriteLine(log);
+                }
             }
         }
     }
