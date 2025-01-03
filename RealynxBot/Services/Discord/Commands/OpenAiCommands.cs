@@ -14,7 +14,7 @@ namespace RealynxBot.Services.Discord.Commands {
         }
 
         [CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]
-        [IntegrationType(ApplicationIntegrationType.UserInstall)]
+        [IntegrationType(ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall)]
         [SlashCommand("gpt", "Replies with an AI generated response from GPT.")]
         public async Task PromptAi(string prompt) {
             await DeferAsync();
@@ -30,7 +30,7 @@ namespace RealynxBot.Services.Discord.Commands {
         }
 
         [CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]
-        [IntegrationType(ApplicationIntegrationType.UserInstall)]
+        [IntegrationType(ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall)]
         [SlashCommand("google", "Uses GPT AI to query google and provide comprehensive results.")]
         public async Task SearchGoogle(string query) {
             await DeferAsync();
