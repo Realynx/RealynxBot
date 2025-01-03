@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 
 using HtmlAgilityPack;
 
+using RealynxBot.Extensions;
 using RealynxBot.Services.Interfaces;
 
 namespace RealynxBot.Services.Web {
@@ -91,7 +92,7 @@ namespace RealynxBot.Services.Web {
                 contentBuilder.Append(' ');
             }
 
-            var bodyContent = contentBuilder.Replace("\n", string.Empty).Replace("\r", string.Empty).ToString().Trim();
+            var bodyContent = contentBuilder.Replace("\n", string.Empty).Replace("\r", string.Empty).Trim().ToString();
             bodyContent = MultiSpaceRegex.Replace(bodyContent, " ");
             return bodyContent;
         }
