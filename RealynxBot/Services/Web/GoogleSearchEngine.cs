@@ -28,7 +28,7 @@ namespace RealynxBot.Services.Web {
                 var search = new CustomSearchAPIService(cfg);
                 var listRequest = search.Cse.List();
                 listRequest.Q = searchQuery;
-                listRequest.Cx = _googleApiConfig.CustomSrearchEngineId;
+                listRequest.Cx = _googleApiConfig.CustomSearchEngineId;
                 listRequest.Start = currentResultOffset;
 
                 var searchResult = await listRequest.ExecuteAsync();
