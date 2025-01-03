@@ -78,7 +78,8 @@ namespace RealynxBot {
             socketClient = new DiscordSocketClient(new DiscordSocketConfig {
                 LogGatewayIntentWarnings = true,
                 GatewayIntents = GatewayIntents.All,
-                LogLevel = LogSeverity.Verbose
+                LogLevel = LogSeverity.Verbose,
+                MaxWaitBetweenGuildAvailablesBeforeReady = 250,
             });
 
             socketClient.Ready += SocketClient_Ready;
