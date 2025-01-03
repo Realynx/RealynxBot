@@ -41,12 +41,12 @@ namespace RealynxBot.Services.Web {
                 return CONTENT_FETCH_FAILURE_MESSAGE;
             }
 
-            if (!httpResponseMessage.Content.Headers.TryGetValues("Content-Type", out var contentHeaders) || contentHeaders is null) {
+            if (!httpResponseMessage.Content.Headers.TryGetValues("Content-Type", out var contentHeaders)) {
                 _logger.Error($"Could not GET url '{url}' Response has no Content-Type");
                 return CONTENT_FETCH_FAILURE_MESSAGE;
             }
 
-            var contentHeader = contentHeaders!.FirstOrDefault(string.Empty);
+            var contentHeader = contentHeaders.FirstOrDefault(string.Empty);
             if (!contentHeader.StartsWith("text/html") && !contentHeader.StartsWith("application/xhtml+xml") && !contentHeader.StartsWith("application/xml")) {
                 _logger.Error($"Could not GET url '{url}' Content-Type: {contentHeader}");
                 return CONTENT_FETCH_FAILURE_MESSAGE;
