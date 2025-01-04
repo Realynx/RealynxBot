@@ -53,6 +53,7 @@ namespace RealynxBot {
                 .AddSingleton<IDiscordNotificationService, DiscordNotificationService>()
                 .AddSingleton<IUserRoleWatcherService, UserRoleWatcherService>()
                 .AddSingleton<ICommandHandlerService, CommandHandlerService>()
+                .AddSingleton<IDiscordResponseService, DiscordResponseService>()
 
                 .AddSingleton<IGptChatService, GptChatService>()
                 .AddSingleton<IGoogleSearchEngine, GoogleSearchEngine>()

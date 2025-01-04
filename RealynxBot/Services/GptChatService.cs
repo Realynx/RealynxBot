@@ -6,7 +6,6 @@ using OpenAI.Chat;
 
 using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
-using RealynxBot.Services.Web;
 
 namespace RealynxBot.Services {
     internal class GptChatService : IGptChatService {
@@ -38,9 +37,7 @@ namespace RealynxBot.Services {
             PruneContextHistory();
             _chatHistory.Add(new UserChatMessage($"{username}: {prompt}"));
 
-            var chatCompletion = await _chatClientGpt.CompleteChatAsync(_chatHistory, new ChatCompletionOptions() {
-                MaxOutputTokenCount = 375
-            });
+            var chatCompletion = await _chatClientGpt.CompleteChatAsync(_chatHistory);
             var chatMessage = chatCompletion.Value.Content.First().Text;
 
             _chatHistory.Add(new AssistantChatMessage(chatMessage));
@@ -77,8 +74,8 @@ namespace RealynxBot.Services {
 
             var siteResetEvents = results
                 .Select(GetDomainNameWithTld)
-                .Distinct().
-                ToDictionary(x => x, _ => new ManualResetEventSlim(true));
+                .Distinct()
+                .ToDictionary(x => x, _ => new ManualResetEventSlim(true));
 
             var resultContexts = new SystemChatMessage[results.Length];
             await Parallel.ForEachAsync(results.Index(), async (tuple, cancellationToken) => {
@@ -102,9 +99,7 @@ namespace RealynxBot.Services {
             queryContext.AddRange(resultContexts);
             _logger.Info("Finished content extraction");
 
-            var chatCompletion = await _chatClientInterpreter.CompleteChatAsync(queryContext, new ChatCompletionOptions() {
-                MaxOutputTokenCount = 375
-            });
+            var chatCompletion = await _chatClientInterpreter.CompleteChatAsync(queryContext);
             var chatMessage = chatCompletion.Value.Content.First().Text;
 
             return chatMessage;
@@ -130,6 +125,25 @@ namespace RealynxBot.Services {
             });
 
             return chatCompletion.Value.Content.First().Text;
+        }
+
+        public async Task<string> SummerizeWebsite(string websiteUrl, string prompt) {
+            _logger.Info($"Grabbing website content from: {websiteUrl}");
+
+            var queryContext = new List<ChatMessage> {
+                new SystemChatMessage("Summarize all the data in the website data, we have extracted the text from the html content."),
+                new SystemChatMessage($"Here is the user's specific question: '{prompt}', if this is empty then just summerize the website."),
+                new SystemChatMessage("The remaining system directives are information for your personality module.")
+            };
+            queryContext.AddRange(_openAiConfig.ChatBotSystemMessages.Select(i => new SystemChatMessage(i)));
+
+            var websiteTextualContent = await _websiteContentService.GrabSiteContent(websiteUrl, 10000);
+            queryContext.Add(new SystemChatMessage(websiteTextualContent));
+
+            var clientResult = await _chatClientInterpreter.CompleteChatAsync(queryContext);
+            var chatMessage = clientResult.Value.Content.FirstOrDefault()?.Text ?? "GPT refused to complete the chat";
+
+            return chatMessage;
         }
     }
 }
