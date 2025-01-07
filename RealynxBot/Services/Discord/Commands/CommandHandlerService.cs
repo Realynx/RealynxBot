@@ -54,24 +54,37 @@ namespace RealynxBot.Services.Discord.Commands {
             switch (arg.Severity) {
                 case LogSeverity.Critical:
                 case LogSeverity.Error:
-                    _logger.Error(arg.Message);
+                    _logger.Error(UnwrapLogMessage(arg));
                     break;
                 case LogSeverity.Warning:
-                    _logger.Warning(arg.Message);
+                    _logger.Warning(UnwrapLogMessage(arg));
                     break;
                 case LogSeverity.Info:
-                    _logger.Info(arg.Message);
+                    _logger.Info(UnwrapLogMessage(arg));
                     break;
                 case LogSeverity.Verbose:
                 case LogSeverity.Debug:
-                    _logger.Debug(arg.Message);
+                    _logger.Debug(UnwrapLogMessage(arg));
                     break;
                 default:
-                    _logger.Info(arg.Message);
+                    _logger.Info(UnwrapLogMessage(arg));
                     break;
             }
 
             return Task.CompletedTask;
+        }
+
+        private static string UnwrapLogMessage(LogMessage arg) {
+            if (!string.IsNullOrWhiteSpace(arg.Message)) {
+                return $"[{arg.Source}] {arg.Message}";
+            }
+
+            var exceptionString = arg.Exception?.ToString();
+            if (string.IsNullOrWhiteSpace(exceptionString)) {
+                exceptionString = "Unknown message.";
+            }
+
+            return $"[{arg.Source}] {exceptionString}";
         }
     }
 }

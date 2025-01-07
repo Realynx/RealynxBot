@@ -24,7 +24,9 @@ namespace RealynxBot.Services.Discord.Commands {
 
             try {
                 var gptResponse = await _gptChatService.GenerateResponse(prompt, Context.User.Username);
-                await _discordResponseService.ChunkMessage(gptResponse, messageChunk => FollowupAsync(messageChunk));
+                foreach (var chunk in _discordResponseService.ChunkMessageToLines(gptResponse)) {
+                    await FollowupAsync(chunk);
+                }
             }
             catch (Exception e) {
                 await FollowupAsync("There was an error.");
@@ -40,7 +42,9 @@ namespace RealynxBot.Services.Discord.Commands {
 
             try {
                 var gptResponse = await _gptChatService.SearchGoogle(query);
-                await _discordResponseService.ChunkMessage(gptResponse, messageChunk => FollowupAsync(messageChunk));
+                foreach (var chunk in _discordResponseService.ChunkMessageToLines(gptResponse)) {
+                    await FollowupAsync(chunk);
+                }
             }
             catch (Exception e) {
                 await FollowupAsync("There was an error.");
@@ -50,13 +54,15 @@ namespace RealynxBot.Services.Discord.Commands {
 
         [CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]
         [IntegrationType(ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall)]
-        [SlashCommand("website", "Visit a host and summerize the page or response. Optionly you can add a prompt to the website.")]
-        public async Task SummerizeWebsite(string webAddress, string question = "") {
+        [SlashCommand("website", "Visit a host and summarize the page or response. Optionally you can add a prompt to the website.")]
+        public async Task SummarizeWebsite(string websiteUrl, string question = "") {
             await DeferAsync();
 
             try {
-                var gptResponse = await _gptChatService.SummerizeWebsite(webAddress, question);
-                await _discordResponseService.ChunkMessage(gptResponse, messageChunk => FollowupAsync(messageChunk));
+                var gptResponse = await _gptChatService.SummerizeWebsite(websiteUrl, question);
+                foreach (var chunk in _discordResponseService.ChunkMessageToLines(gptResponse)) {
+                    await FollowupAsync(chunk);
+                }
             }
             catch (Exception e) {
                 await FollowupAsync("There was an error.");
