@@ -41,6 +41,7 @@ namespace RealynxBot {
                 .AddSingleton<LoggerConfig>()
                 .AddSingleton<RoleWatcherConfig>()
                 .AddSingleton<OpenAiConfig>()
+                .AddSingleton<BrowserConfig>()
                 .AddSingleton<GoogleApiConfig>()
                 .AddSingleton<DiscordConfig>();
 
@@ -58,6 +59,7 @@ namespace RealynxBot {
                 .AddSingleton<IGptChatService, GptChatService>()
                 .AddSingleton<IGoogleSearchEngine, GoogleSearchEngine>()
                 .AddSingleton<IWebsiteContentService, WebsiteContentService>()
+                .AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>()
                 .AddHostedService<DiscordStartup>();
 
             services

@@ -51,11 +51,11 @@ namespace RealynxBot.Services.Discord.Commands {
         [CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]
         [IntegrationType(ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall)]
         [SlashCommand("website", "Visit a host and summerize the page or response. Optionly you can add a prompt to the website.")]
-        public async Task SummerizeWebsite(string websiteUrl, string question = "") {
+        public async Task SummerizeWebsite(string webAddress, string question = "") {
             await DeferAsync();
 
             try {
-                var gptResponse = await _gptChatService.SummerizeWebsite(websiteUrl, question);
+                var gptResponse = await _gptChatService.SummerizeWebsite(webAddress, question);
                 await _discordResponseService.ChunkMessage(gptResponse, messageChunk => FollowupAsync(messageChunk));
             }
             catch (Exception e) {
