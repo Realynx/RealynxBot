@@ -1,4 +1,7 @@
-﻿using PuppeteerSharp;
+﻿using System;
+using System.Diagnostics.Tracing;
+
+using PuppeteerSharp;
 
 using RealynxBot.Models.Config;
 using RealynxBot.Services.Exceptions;
@@ -67,7 +70,7 @@ namespace RealynxBot.Services.Web {
 
         private void Page_Console(object? sender, ConsoleEventArgs e) {
             if (e.Message.Type == ConsoleType.Error) {
-                throw new JsException(e.Message.Text);
+                //throw new JsException(e.Message.Text);
             }
 
             _logger.Debug($"Js Console: '{e.Message.Text}'");
@@ -100,6 +103,20 @@ namespace RealynxBot.Services.Web {
             }
 
             throw new ArgumentException("Invalid web address. Could not create a valid URI.", nameof(webAddress));
+        }
+
+        public async Task<string[]> ExecuteJs(string js) {
+            _logger.Info($"Executeing JavaScrpipt\n{js}");
+
+            await using var browser = await SetupBrowser();
+            await using var page = await browser.NewPageAsync();
+
+            var consoleOutput = new List<string>();
+
+            page.Console += (sender, eventArgs) => consoleOutput.Add(eventArgs.Message.Text);
+            _ = await page.EvaluateExpressionAsync(js);
+
+            return [.. consoleOutput];
         }
     }
 }
