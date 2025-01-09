@@ -3,17 +3,25 @@ using Discord.Interactions;
 
 using RealynxBot.Services.Discord.Interfaces;
 using RealynxBot.Services.Interfaces;
+using RealynxBot.Services.LLM;
 
 namespace RealynxBot.Services.Discord.Commands {
     public class OpenAiCommands : InteractionModuleBase<SocketInteractionContext> {
-        private readonly IGptChatService _gptChatService;
+        private readonly ILmChatService _gptChatService;
         private readonly ILogger _logger;
         private readonly IDiscordResponseService _discordResponseService;
+        private readonly ILmCodeGenerator _lmCodeGenerator;
+        private readonly IHeadlessBrowserService _headlessBrowserService;
+        private readonly ILmWebsiteAnalyzer _lmWebsiteAnalyzer;
 
-        public OpenAiCommands(IGptChatService gptChatService, ILogger logger, IDiscordResponseService discordResponseService) {
+        public OpenAiCommands(ILmChatService gptChatService, ILogger logger, IDiscordResponseService discordResponseService,
+            ILmCodeGenerator lmCodeGenerator, IHeadlessBrowserService headlessBrowserService, ILmWebsiteAnalyzer lmWebsiteAnalyzer) {
             _gptChatService = gptChatService;
             _logger = logger;
             _discordResponseService = discordResponseService;
+            _lmCodeGenerator = lmCodeGenerator;
+            _headlessBrowserService = headlessBrowserService;
+            _lmWebsiteAnalyzer = lmWebsiteAnalyzer;
         }
 
         [CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]
@@ -36,12 +44,28 @@ namespace RealynxBot.Services.Discord.Commands {
 
         [CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]
         [IntegrationType(ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall)]
+        [SlashCommand("function", "Tell GPT to generate a js function and execute it.")]
+        public async Task GptFunction(string gptPrompt) {
+            await DeferAsync();
+
+            var gptJsCode = await _lmCodeGenerator.GenerateJs(gptPrompt);
+            var consoleOutput = await _headlessBrowserService.ExecuteJs(gptJsCode);
+
+            await _discordResponseService.ChunkMessage($@"'{gptPrompt}'
+```javascript
+{gptJsCode}
+```", async message => await FollowupAsync(message));
+            await _discordResponseService.ChunkMessage(string.Join("\n", consoleOutput), async message => await FollowupAsync(message));
+        }
+
+        [CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]
+        [IntegrationType(ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall)]
         [SlashCommand("google", "Uses GPT AI to query google and provide comprehensive results.")]
         public async Task SearchGoogle(string query) {
             await DeferAsync();
 
             try {
-                var gptResponse = await _gptChatService.SearchGoogle(query);
+                var gptResponse = await _lmWebsiteAnalyzer.SearchWeb(query);
                 foreach (var chunk in _discordResponseService.ChunkMessageToLines(gptResponse)) {
                     await FollowupAsync(chunk);
                 }
@@ -59,7 +83,7 @@ namespace RealynxBot.Services.Discord.Commands {
             await DeferAsync();
 
             try {
-                var gptResponse = await _gptChatService.SummerizeWebsite(websiteUrl, question);
+                var gptResponse = await _lmWebsiteAnalyzer.SummarizWebsite(websiteUrl, question);
                 foreach (var chunk in _discordResponseService.ChunkMessageToLines(gptResponse)) {
                     await FollowupAsync(chunk);
                 }

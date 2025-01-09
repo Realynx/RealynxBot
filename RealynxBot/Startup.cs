@@ -19,6 +19,7 @@ using RealynxBot.Services.Discord;
 using RealynxBot.Services.Discord.Commands;
 using RealynxBot.Services.Discord.Interfaces;
 using RealynxBot.Services.Interfaces;
+using RealynxBot.Services.LLM;
 using RealynxBot.Services.Web;
 
 namespace RealynxBot {
@@ -56,7 +57,11 @@ namespace RealynxBot {
                 .AddSingleton<ICommandHandlerService, CommandHandlerService>()
                 .AddSingleton<IDiscordResponseService, DiscordResponseService>()
 
-                .AddSingleton<IGptChatService, GptChatService>()
+                .AddSingleton<ILmPersonalityService, GptPersonalityService>()
+                .AddSingleton<ILmChatService, GptChatService>()
+                .AddSingleton<ILmCodeGenerator, GptCodeGenerator>()
+                .AddSingleton<ILmQueryGenerator, GptQueryGenerator>()
+                .AddSingleton<ILmWebsiteAnalyzer, GptWebsiteAnalyzer>()
                 .AddSingleton<IGoogleSearchEngine, GoogleSearchEngine>()
                 .AddSingleton<IWebsiteContentService, WebsiteContentService>()
                 .AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>()
