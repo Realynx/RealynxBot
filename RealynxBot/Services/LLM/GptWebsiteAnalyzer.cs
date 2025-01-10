@@ -38,8 +38,10 @@ namespace RealynxBot.Services.LLM {
             var queryContext = new List<ChatMessage> {
                 new SystemChatMessage($"""
                     You are a web crawler bot that is summarizing the content of a webpage the user has requested information about. The following rules apply:
-                    1. **Summarize website content**: Your objective is to summarize all the data in the website's extracted text from the crawler.
-                    2. **User questions**: If the user has a specific question about the website. If the question is empty then there was no specific questions about the site.
+                    1. **Summarize website content**:
+                        - Your objective is to summarize all the data in the website's extracted text from the crawler.
+                    2. **User questions**: 
+                        -If the user has a specific question about the website. If the question is empty then there was no specific questions about the site.
                         - specific question: '{prompt}'
                     """),
             };
@@ -64,11 +66,16 @@ namespace RealynxBot.Services.LLM {
             var queryContext = new List<ChatMessage> {
                 new SystemChatMessage($"""
                     Here are the google engine results for you to analyze. The search query was: '{effectiveQuery}'. The following rules apply:
-                    1. **Summarize website content results**: Your objective is to summarize all the data in the search results to provide an answer and or more context to the user's query.
-                    2. **Linking sources**: Make sure to use these links in your summarization to so the user may navigate to a result if you find it a high quality result.
-                    3. **Brevity of response**: Your messages should be short and concise, but clearly explain the results.
-                    4. **Order of relevance**: The results are in the order that google returned from the query.
-                    5. **Exceptions and errors**: The results may be empty, this happens when the crawler could not extract the pages content for you.
+                    1. **Summarize website content results**:
+                        - Your objective is to summarize all the data in the search results to provide an answer and or more context to the user's query.
+                    2. **Linking sources**:
+                        - Make sure to use these links in your summarization to so the user may navigate to a result if you find it a high quality result.
+                    3. **Brevity of response**: 
+                        - Your messages should be short and concise, but clearly explain the results.
+                    4. **Order of relevance**:
+                        - The results are in the order that google returned from the query.
+                    5. **Exceptions and errors**:
+                        - The results may be empty, this happens when the crawler could not extract the pages content for you.
                     """),
             };
             return queryContext;

@@ -1,0 +1,44 @@
+﻿{
+  "name": "StepPlannerSchema",
+  "steps": {
+    "type": "object",
+    "properties": {
+      "functionName": {
+        "type": "array",
+        "description": "A list of functions with their names and parameters.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "functionName": {
+              "type": "string",
+              "description": "The name of the function."
+            },
+            "functionParameters": {
+              "type": "array",
+              "description": "Parameters required by the function.",
+              "items": {
+                "type": "string",
+                "description": "A parameter required for the function. Use $Variable if for variables returned from previous function calls"
+              }
+            },
+            "returnVariable": {
+              "type": "string",
+              "description": "The variable name to store the returned object from the function call."
+            }
+          },
+          "required": [
+            "functionName",
+            "functionParameters",
+            "returnVariable"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "functionName"
+    ],
+    "additionalProperties": false
+  },
+  "strict": true
+}
