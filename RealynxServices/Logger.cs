@@ -1,9 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
 
-using RealynxBot.Models.Config;
-using RealynxBot.Services.Interfaces;
+using RealynxServices.Config;
+using RealynxServices.Interfaces;
 
-namespace RealynxBot.Services {
+namespace RealynxServices {
     [Flags]
     public enum LogLevel {
         Debugging = 1,

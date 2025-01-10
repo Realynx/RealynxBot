@@ -4,6 +4,8 @@ using Discord.Interactions;
 using RealynxBot.Services.Discord.Interfaces;
 using RealynxBot.Services.Interfaces;
 
+using RealynxServices.Interfaces;
+
 namespace RealynxBot.Services.Discord.Commands {
     public class BasicWebCommands : InteractionModuleBase<SocketInteractionContext> {
         private readonly ILogger _logger;

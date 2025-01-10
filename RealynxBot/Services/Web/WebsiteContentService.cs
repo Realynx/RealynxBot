@@ -6,6 +6,8 @@ using HtmlAgilityPack;
 using RealynxBot.Extensions;
 using RealynxBot.Services.Interfaces;
 
+using RealynxServices.Interfaces;
+
 namespace RealynxBot.Services.Web {
     internal partial class WebsiteContentService : IWebsiteContentService {
         [GeneratedRegex(@"\w{20,}")]

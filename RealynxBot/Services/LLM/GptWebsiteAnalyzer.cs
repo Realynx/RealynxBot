@@ -7,6 +7,8 @@ using OpenAI.Chat;
 using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
 
+using RealynxServices.Interfaces;
+
 namespace RealynxBot.Services.LLM {
     internal class GptWebsiteAnalyzer : ILmWebsiteAnalyzer {
         private readonly ILogger _logger;

@@ -1,7 +1,10 @@
-﻿using OpenAI.Chat;
+﻿using System.Reflection;
+
+using OpenAI.Chat;
 
 using RealynxBot.Models.Config;
-using RealynxBot.Services.Interfaces;
+
+using RealynxServices.Interfaces;
 
 using StepPlanModule;
 
@@ -32,7 +35,7 @@ namespace RealynxBot.Services.LLM.StepPlanner {
             return queryContext;
         }
 
-        public async Task<StepPlan> PlanObjectiveSteps(string objectivePrompt, object functionModule) {
+        public async Task<StepPlan> PlanObjectiveSteps(string objectivePrompt, Assembly[] functionModules) {
             var lmContext = LanguageModelContext_CreateStepPlan(objectivePrompt);
 
             var clientResult = await _chatClientGpt.CompleteChatAsync(lmContext, new ChatCompletionOptions() {

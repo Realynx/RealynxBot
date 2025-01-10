@@ -6,7 +6,8 @@ using Discord.Interactions;
 using Discord.WebSocket;
 
 using RealynxBot.Services.Discord.Interfaces;
-using RealynxBot.Services.Interfaces;
+
+using RealynxServices.Interfaces;
 
 namespace RealynxBot.Services.Discord.Commands {
     public class CommandHandlerService : ICommandHandlerService {

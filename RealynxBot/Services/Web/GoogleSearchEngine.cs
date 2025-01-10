@@ -4,6 +4,8 @@ using Google.Apis.CustomSearchAPI.v1.Data;
 using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
 
+using RealynxServices.Interfaces;
+
 namespace RealynxBot.Services.Web {
     internal class GoogleSearchEngine : IGoogleSearchEngine {
         private readonly ILogger _logger;

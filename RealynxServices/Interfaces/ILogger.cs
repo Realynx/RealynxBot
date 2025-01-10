@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace RealynxBot.Services.Interfaces {
+namespace RealynxServices.Interfaces {
     public interface ILogger {
         LogLevel Level { get; set; }
 

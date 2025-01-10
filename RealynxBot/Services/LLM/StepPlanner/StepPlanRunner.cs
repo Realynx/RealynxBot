@@ -1,4 +1,4 @@
-﻿using RealynxBot.Services.Interfaces;
+﻿using RealynxServices.Interfaces;
 
 using StepPlanModule;
 
