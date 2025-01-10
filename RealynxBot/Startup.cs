@@ -62,9 +62,11 @@ namespace RealynxBot {
                 .AddSingleton<ILmCodeGenerator, GptCodeGenerator>()
                 .AddSingleton<ILmQueryGenerator, GptQueryGenerator>()
                 .AddSingleton<ILmWebsiteAnalyzer, GptWebsiteAnalyzer>()
+
                 .AddSingleton<IGoogleSearchEngine, GoogleSearchEngine>()
                 .AddSingleton<IWebsiteContentService, WebsiteContentService>()
                 .AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>()
+
                 .AddHostedService<DiscordStartup>();
 
             services

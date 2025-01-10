@@ -1,10 +1,6 @@
-﻿using System;
-using System.Diagnostics.Tracing;
-
-using PuppeteerSharp;
+﻿using PuppeteerSharp;
 
 using RealynxBot.Models.Config;
-using RealynxBot.Services.Exceptions;
 using RealynxBot.Services.Interfaces;
 
 namespace RealynxBot.Services.Web {

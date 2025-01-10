@@ -4,12 +4,12 @@ using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
 
 namespace RealynxBot.Services.LLM {
-    public class GptCodeGenerator : ILmCodeGenerator {
+    internal class GptCodeGenerator : ILmCodeGenerator {
         private readonly ILogger _logger;
         private readonly OpenAiConfig _openAiConfig;
-        private ChatClient _chatClientGpt;
+        private readonly ChatClient _chatClientGpt;
 
-        internal GptCodeGenerator(ILogger logger, OpenAiConfig openAiConfig) {
+        public GptCodeGenerator(ILogger logger, OpenAiConfig openAiConfig) {
             _logger = logger;
             _openAiConfig = openAiConfig;
             _chatClientGpt = new(_openAiConfig.GptModelId, _openAiConfig.ApiKey);

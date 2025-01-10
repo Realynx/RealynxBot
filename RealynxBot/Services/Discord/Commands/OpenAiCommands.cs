@@ -51,10 +51,12 @@ namespace RealynxBot.Services.Discord.Commands {
             var gptJsCode = await _lmCodeGenerator.GenerateJs(gptPrompt);
             var consoleOutput = await _headlessBrowserService.ExecuteJs(gptJsCode);
 
-            await _discordResponseService.ChunkMessage($@"'{gptPrompt}'
-```javascript
-{gptJsCode}
-```", async message => await FollowupAsync(message));
+            await _discordResponseService.ChunkMessage($"""
+                '{gptPrompt}'
+                ```javascript
+                {gptJsCode}
+                ```
+                """, async message => await FollowupAsync(message));
             await _discordResponseService.ChunkMessage(string.Join("\n", consoleOutput), async message => await FollowupAsync(message));
         }
 
