@@ -1,16 +1,20 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.SemanticKernel;
 
 using RealynxBot.Interfaces;
 
 namespace RealynxBot.Extensions {
     public static class HostBuilderExtension {
-        public static IHostBuilder UseStartup<T>(this IHostBuilder hostBuilder) where T : IStartup, new() {
+        public static IKernelBuilder UseStartup<T>(this IKernelBuilder hostBuilder) where T : IStartup, new() {
             IStartup startup = new T();
 
-            hostBuilder.ConfigureAppConfiguration(startup.Configure);
+            var configBuilder = new ConfigurationBuilder();
+            startup.Configure(configBuilder);
 
-            hostBuilder.ConfigureAppConfiguration((_, config) => startup.Configuration = config.Build());
-            hostBuilder.ConfigureServices(startup.ConfigureServices);
+            var config = configBuilder.Build();
+            startup.Configuration = config;
+
+            startup.ConfigureServices(hostBuilder.Services);
 
             return hostBuilder;
         }

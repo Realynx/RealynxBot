@@ -2,7 +2,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 using RealynxBot.Extensions;
 using RealynxBot.Interfaces;
@@ -10,19 +9,22 @@ using RealynxBot.Services;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.Web;
 
+using RealynxServices;
+using RealynxServices.Interfaces;
+
 namespace RealynxBot {
     public class Startup : IStartup {
 
         public IConfiguration Configuration { get; set; } = default!;
 
-        public void Configure(HostBuilderContext hostBuilderContext, IConfigurationBuilder configurationBuilder) {
+        public void Configure(IConfigurationBuilder configurationBuilder) {
             configurationBuilder
                 .AddJsonFile("appsettings.json")
                 .AddUserSecrets(Assembly.GetExecutingAssembly())
                 .AddEnvironmentVariables();
         }
 
-        public void ConfigureServices(HostBuilderContext hostBuilderContext, IServiceCollection services) {
+        public void ConfigureServices(IServiceCollection services) {
 
             services
                 .AddConfigModels()

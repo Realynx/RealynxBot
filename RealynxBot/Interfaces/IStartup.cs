@@ -7,8 +7,8 @@ namespace RealynxBot.Interfaces {
 
         IConfiguration Configuration { get; set; }
 
-        void ConfigureServices(HostBuilderContext hostBuilderContext, IServiceCollection services);
+        void ConfigureServices(IServiceCollection services);
 
-        void Configure(HostBuilderContext hostBuilderContext, IConfigurationBuilder configurationBuilder);
+        void Configure(IConfigurationBuilder configurationBuilder);
     }
 }

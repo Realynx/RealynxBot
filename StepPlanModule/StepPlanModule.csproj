@@ -12,6 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RealynxServices\RealynxServices.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="JsonSchemas\StepPlannerSchema.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
