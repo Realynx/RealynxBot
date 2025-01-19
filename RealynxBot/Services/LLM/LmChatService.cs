@@ -1,24 +1,24 @@
-﻿using OpenAI.Chat;
+﻿using Microsoft.Extensions.AI;
 
 using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
 
 namespace RealynxBot.Services.LLM {
-    internal class GptChatService : ILmChatService {
+    internal class LmChatService : ILmChatService {
         private readonly ILogger _logger;
         private readonly OpenAiConfig _openAiConfig;
         private readonly ILmPersonalityService _lmPersonalityService;
 
-        private readonly ChatClient _chatClientGpt;
+        private readonly IChatClient _chatClient;
         private readonly List<ChatMessage> _chatHistory = new();
 
-        public GptChatService(ILogger logger, OpenAiConfig openAiConfig, ILmPersonalityService lmPersonalityService) {
+        public LmChatService(ILogger logger, OpenAiConfig openAiConfig, ILmPersonalityService lmPersonalityService, IChatClient chatClient) {
             _openAiConfig = openAiConfig;
             _lmPersonalityService = lmPersonalityService;
+            _chatClient = chatClient;
             _logger = logger;
-            _chatClientGpt = new(_openAiConfig.GptModelId, _openAiConfig.ApiKey);
 
-            _chatHistory.Add(new SystemChatMessage("""
+            _chatHistory.Add(new(ChatRole.System, """
                 You are a chat assistant inside of discord. Your task is to chat with and help users. The following rules apply:
                 1. **Chat messages**:
                     - Chat messages will be prefixed with the user's discord name in example: 'Poofyfox: [message prompt]'.
@@ -30,24 +30,24 @@ namespace RealynxBot.Services.LLM {
         }
 
         private void PruneContextHistory() {
-            var maxContext = 12;
+            var maxContext = 30;
             if (_chatHistory.Count > maxContext) {
                 var removeCount = _chatHistory.Count - maxContext;
                 _logger.Debug($"Cleaning up context, removing {removeCount} oldest");
-                _chatHistory.RemoveRange(_chatHistory.Count(i => i is SystemChatMessage), removeCount);
+                _chatHistory.RemoveRange(_chatHistory.Count(i => i.Role == ChatRole.System), removeCount);
             }
         }
 
         public async Task<string> GenerateResponse(string prompt, string username) {
-            _logger.Debug($"Prompting Gpt: '{prompt}'");
+            _logger.Debug($"Prompting LLM: '{prompt}'");
 
             PruneContextHistory();
-            _chatHistory.Add(new UserChatMessage($"{username}: {prompt}"));
+            _chatHistory.Add(new ChatMessage(ChatRole.User, $"{username}: {prompt}"));
 
-            var chatCompletion = await _chatClientGpt.CompleteChatAsync(_chatHistory);
-            var chatMessage = chatCompletion.Value.Content.First().Text;
+            var chatCompletion = await _chatClient.CompleteAsync(_chatHistory);
+            var chatMessage = chatCompletion.Message.Text ?? string.Empty;
 
-            _chatHistory.Add(new AssistantChatMessage(chatMessage));
+            _chatHistory.Add(new ChatMessage(ChatRole.Assistant, chatMessage));
 
             return chatMessage;
         }

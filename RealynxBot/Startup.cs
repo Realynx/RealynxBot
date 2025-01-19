@@ -5,6 +5,7 @@ using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
 
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,6 +21,7 @@ using RealynxBot.Services.Discord.Commands;
 using RealynxBot.Services.Discord.Interfaces;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM;
+using RealynxBot.Services.LLM.Gpt;
 using RealynxBot.Services.Web;
 
 namespace RealynxBot {
@@ -57,17 +59,21 @@ namespace RealynxBot {
                 .AddSingleton<ICommandHandlerService, CommandHandlerService>()
                 .AddSingleton<IDiscordResponseService, DiscordResponseService>()
 
-                .AddSingleton<ILmPersonalityService, GptPersonalityService>()
-                .AddSingleton<ILmChatService, GptChatService>()
-                .AddSingleton<ILmCodeGenerator, GptCodeGenerator>()
-                .AddSingleton<ILmQueryGenerator, GptQueryGenerator>()
-                .AddSingleton<ILmWebsiteAnalyzer, GptWebsiteAnalyzer>()
+                .AddSingleton<ILmPersonalityService, LmPersonalityService>()
+                .AddSingleton<ILmChatService, LmChatService>()
+                .AddSingleton<ILmCodeGenerator, LmCodeGenerator>()
+                .AddSingleton<ILmQueryGenerator, LmQueryGenerator>()
+                .AddSingleton<ILmWebsiteAnalyzer, LmWebsiteAnalyzer>()
 
                 .AddSingleton<IGoogleSearchEngine, GoogleSearchEngine>()
                 .AddSingleton<IWebsiteContentService, WebsiteContentService>()
                 .AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>()
 
                 .AddHostedService<DiscordStartup>();
+
+
+            services
+                .AddChatClient(i => new OllamaChatClient("http://10.0.1.123", "qwq:latest"));
 
             services
                 .AddHttpClient<IWebsiteContentService, WebsiteContentService>(client => {

@@ -1,23 +1,20 @@
-﻿using OpenAI.Chat;
+﻿using Microsoft.Extensions.AI;
 
-using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
 
 namespace RealynxBot.Services.LLM {
-    internal class GptCodeGenerator : ILmCodeGenerator {
+    internal class LmCodeGenerator : ILmCodeGenerator {
         private readonly ILogger _logger;
-        private readonly OpenAiConfig _openAiConfig;
-        private readonly ChatClient _chatClientGpt;
+        private readonly IChatClient _chatClient;
 
-        public GptCodeGenerator(ILogger logger, OpenAiConfig openAiConfig) {
+        public LmCodeGenerator(ILogger logger, IChatClient chatClient) {
             _logger = logger;
-            _openAiConfig = openAiConfig;
-            _chatClientGpt = new(_openAiConfig.GptModelId, _openAiConfig.ApiKey);
+            _chatClient = chatClient;
         }
 
         private static List<ChatMessage> GenerateLmPrompt(string prompt) {
             return new List<ChatMessage> {
-                new SystemChatMessage("""
+                new ChatMessage(ChatRole.System, """
                 You are a coding assistant. Your task is to generate pure, executable JavaScript code based on the user's prompt. The following rules apply:
                 1. **Output Raw JavaScript Code Only**: The output must be raw JavaScript code without any additional formatting, comments, explanations, or markdown syntax.
                 2. **Execution Environment**: The code will be executed inside a sandboxed headless browser (compatible with Chrome and Firefox).
@@ -34,7 +31,7 @@ namespace RealynxBot.Services.LLM {
                     - If a request cannot be fulfilled, respond in JavaScript with an appropriate error message logged to the console. 
                 8. **Execution Assurance**: The output must be valid and executable JavaScript code
                 """),
-                new UserChatMessage(prompt)
+                new ChatMessage(ChatRole.User, prompt)
             };
         }
 
@@ -42,11 +39,11 @@ namespace RealynxBot.Services.LLM {
             _logger.Info($"Generating jave script code: {prompt}");
 
             var languageModelContext = GenerateLmPrompt(prompt);
-            var clientResult = await _chatClientGpt.CompleteChatAsync(languageModelContext, new ChatCompletionOptions() {
+            var clientResult = await _chatClient.CompleteAsync(languageModelContext, new ChatOptions() {
                 Temperature = .05f,
             });
 
-            var chatMessage = clientResult.Value.Content.FirstOrDefault()?.Text ?? "GPT refused to complete the chat";
+            var chatMessage = clientResult.Message.Text ?? "LLM refused to complete the chat";
             return chatMessage;
         }
     }

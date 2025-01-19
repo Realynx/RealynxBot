@@ -1,14 +1,14 @@
-﻿using OpenAI.Chat;
+﻿using Microsoft.Extensions.AI;
 
 using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
 
-namespace RealynxBot.Services.LLM {
-    internal class GptPersonalityService : ILmPersonalityService {
+namespace RealynxBot.Services.LLM.Gpt {
+    internal class LmPersonalityService : ILmPersonalityService {
         private readonly ILogger _logger;
         private readonly OpenAiConfig _openAiConfig;
 
-        public GptPersonalityService(ILogger logger, OpenAiConfig openAiConfig) {
+        public LmPersonalityService(ILogger logger, OpenAiConfig openAiConfig) {
             _logger = logger;
             _openAiConfig = openAiConfig;
         }
@@ -19,7 +19,7 @@ namespace RealynxBot.Services.LLM {
                 {string.Join(Environment.NewLine, _openAiConfig.ChatBotSystemMessages)}
                 """;
 
-            languageModelContext.Add(new SystemChatMessage(configuredPersonality));
+            languageModelContext.Add(new ChatMessage(ChatRole.System, configuredPersonality));
         }
     }
 }

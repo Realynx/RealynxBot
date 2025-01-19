@@ -1,5 +1,6 @@
 ﻿
-using OpenAI.Chat;
+
+using Microsoft.Extensions.AI;
 
 namespace RealynxBot.Services.Interfaces {
     internal interface ILmPersonalityService {

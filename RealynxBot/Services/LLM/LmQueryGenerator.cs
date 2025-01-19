@@ -1,23 +1,20 @@
-﻿using OpenAI.Chat;
+﻿using Microsoft.Extensions.AI;
 
-using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
 
 namespace RealynxBot.Services.LLM {
-    internal class GptQueryGenerator : ILmQueryGenerator {
+    internal class LmQueryGenerator : ILmQueryGenerator {
         private readonly ILogger _logger;
-        private readonly OpenAiConfig _openAiConfig;
-        private readonly ChatClient _chatClientGpt;
+        private readonly IChatClient _chatClient;
 
-        public GptQueryGenerator(ILogger logger, OpenAiConfig openAiConfig) {
+        public LmQueryGenerator(ILogger logger, IChatClient chatClient) {
             _logger = logger;
-            _openAiConfig = openAiConfig;
-            _chatClientGpt = new(_openAiConfig.InterpreterModelId, _openAiConfig.ApiKey);
+            _chatClient = chatClient;
         }
 
         private static List<ChatMessage> LanguageModelContext(string prompt) {
             return new List<ChatMessage> {
-                    new SystemChatMessage($"""
+                    new ChatMessage(ChatRole.System, $"""
                         You are a query generator designed to create effective Google search queries. The current date is {DateTime.Now:G}.
                         Follow these rules to avoid over-specification and maximize the chances of finding useful information:
 
@@ -48,19 +45,19 @@ namespace RealynxBot.Services.LLM {
                         Your goal is to craft a balanced query that provides a starting point for discovering relevant information.
                         """),
 
-                new UserChatMessage(prompt)
+                new ChatMessage(ChatRole.User, prompt)
             };
         }
 
         public async Task<string> CreateQuery(string prompt) {
             var queryContext = LanguageModelContext(prompt);
 
-            var chatCompletion = await _chatClientGpt.CompleteChatAsync(queryContext, new ChatCompletionOptions() {
+            var chatCompletion = await _chatClient.CompleteAsync(queryContext, new ChatOptions() {
                 Temperature = 0.03f,
-                MaxOutputTokenCount = 50
+                MaxOutputTokens = 50
             });
 
-            return chatCompletion.Value.Content.First().Text;
+            return chatCompletion.Message.Text ?? string.Empty;
         }
     }
 }
