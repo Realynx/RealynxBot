@@ -69,11 +69,12 @@ namespace RealynxBot {
                 .AddSingleton<IWebsiteContentService, WebsiteContentService>()
                 .AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>()
 
-                .AddHostedService<DiscordStartup>();
+                .AddHostedService<DiscordStartup>()
+                .AddHostedService<SatoriUser>();
 
 
             services
-                .AddChatClient(i => new OllamaChatClient("http://10.0.1.123", "qwq:latest"));
+                .AddChatClient(new OllamaChatClient("http://10.0.1.123", "phi4:latest"));
 
             services
                 .AddHttpClient<IWebsiteContentService, WebsiteContentService>(client => {
