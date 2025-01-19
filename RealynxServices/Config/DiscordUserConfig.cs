@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace RealynxBot.Models.Config {
-    internal class DiscordUserConfig {
+namespace RealynxServices.Config {
+    public class DiscordUserConfig {
         public string DiscordToken { get; set; } = default!;
 
         public DiscordUserConfig(IConfiguration configuration) {

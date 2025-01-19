@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace RealynxBot.Models.Config {
+namespace RealynxServices.Config {
     public class BrowserConfig {
         public BrowserConfig(IConfiguration configuration) {
             configuration.GetSection(nameof(BrowserConfig)).Bind(this);

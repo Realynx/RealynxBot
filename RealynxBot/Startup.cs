@@ -10,6 +10,11 @@ using RealynxBot.Services;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.Web;
 
+using RealynxServices;
+using RealynxServices.Config;
+using RealynxServices.Extensions;
+using RealynxServices.Interfaces;
+
 namespace RealynxBot {
     public class Startup : IStartup {
 
@@ -28,6 +33,7 @@ namespace RealynxBot {
                 .AddConfigModels()
                 .AddDiscordServices(Configuration)
                 .AddLanguageModelServices()
+                .ConfigureSkProviders(new OpenAiConfig(Configuration))
 
                 .AddSingleton<IGoogleSearchEngine, GoogleSearchEngine>()
                 .AddSingleton<IWebsiteContentService, WebsiteContentService>()

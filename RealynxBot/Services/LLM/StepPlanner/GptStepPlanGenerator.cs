@@ -2,8 +2,7 @@
 
 using OpenAI.Chat;
 
-using RealynxBot.Models.Config;
-
+using RealynxServices.Config;
 using RealynxServices.Interfaces;
 
 using StepPlanModule;
@@ -35,15 +34,15 @@ namespace RealynxBot.Services.LLM.StepPlanner {
             return queryContext;
         }
 
-        public async Task<StepPlan> PlanObjectiveSteps(string objectivePrompt, Assembly[] functionModules) {
-            var lmContext = LanguageModelContext_CreateStepPlan(objectivePrompt);
+        //public async Task<StepPlan> PlanObjectiveSteps(string objectivePrompt, Assembly[] functionModules) {
+        //    var lmContext = LanguageModelContext_CreateStepPlan(objectivePrompt);
 
-            var clientResult = await _chatClientGpt.CompleteChatAsync(lmContext, new ChatCompletionOptions() {
-                ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat("StepPlannerSchema",
-                BinaryData.FromString(File.ReadAllText(Path.Combine("JsonSchemas", "StepPlannerSchema.json")))),
-            });
+        //    var clientResult = await _chatClientGpt.CompleteChatAsync(lmContext, new ChatCompletionOptions() {
+        //        ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat("StepPlannerSchema",
+        //        BinaryData.FromString(File.ReadAllText(Path.Combine("JsonSchemas", "StepPlannerSchema.json")))),
+        //    });
 
-            var chatMessage = clientResult.Value.Content.FirstOrDefault()?.Text ?? "GPT refused to complete the chat";
-        }
+        //    var chatMessage = clientResult.Value.Content.FirstOrDefault()?.Text ?? "GPT refused to complete the chat";
+        //}
     }
 }

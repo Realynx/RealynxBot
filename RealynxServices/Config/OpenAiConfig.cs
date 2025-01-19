@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace RealynxBot.Models.Config {
-    internal class OpenAiConfig {
+namespace RealynxServices.Config {
+    public class OpenAiConfig {
         public string VoiceModelId { get; set; }
         public string GptModelId { get; set; }
         public string InterpreterModelId { get; set; }

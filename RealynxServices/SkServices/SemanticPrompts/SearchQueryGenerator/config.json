@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "description": "Generate a google query for a user's request.",
+  "execution_settings": {
+    "default": {
+      "max_tokens": 200,
+      "temperature": 0.03,
+      "top_p": 0.0,
+      "presence_penalty": 0.0,
+      "frequency_penalty": 0.0
+    }
+  },
+  "input_variables": [
+    {
+      "name": "input",
+      "description": "The user created prompt for the user's query.",
+      "default": ""
+    },
+    {
+      "name": "date",
+      "description": "The current date time.",
+      "default": ""
+    }
+  ]
+}

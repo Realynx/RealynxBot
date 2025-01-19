@@ -2,11 +2,13 @@
 
 using Google.Apis.CustomSearchAPI.v1.Data;
 
+using Microsoft.SemanticKernel;
+
 using OpenAI.Chat;
 
-using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
 
+using RealynxServices.Config;
 using RealynxServices.Interfaces;
 
 namespace RealynxBot.Services.LLM {
@@ -14,21 +16,22 @@ namespace RealynxBot.Services.LLM {
         private readonly ILogger _logger;
         private readonly OpenAiConfig _openAiConfig;
         private readonly IWebsiteContentService _websiteContentService;
-        private readonly ILmQueryGenerator _lmQueryGenerator;
         private readonly IGoogleSearchEngine _googleSearchEngine;
         private readonly ILmPersonalityService _lmPersonalityService;
+        private readonly Kernel _kernel;
         private readonly ChatClient _chatClientGpt;
 
 
         public GptWebsiteAnalyzer(ILogger logger, OpenAiConfig openAiConfig, IWebsiteContentService websiteContentService,
-            ILmQueryGenerator lmQueryGenerator, IGoogleSearchEngine googleSearchEngine, ILmPersonalityService lmPersonalityService) {
+            IGoogleSearchEngine googleSearchEngine, ILmPersonalityService lmPersonalityService, Kernel kernel) {
             _logger = logger;
             _openAiConfig = openAiConfig;
             _websiteContentService = websiteContentService;
-            _lmQueryGenerator = lmQueryGenerator;
             _googleSearchEngine = googleSearchEngine;
             _lmPersonalityService = lmPersonalityService;
             _chatClientGpt = new(_openAiConfig.InterpreterModelId, _openAiConfig.ApiKey);
+
+            _kernel = kernel;
         }
 
         private static string GetDomainNameWithTld(Result result) {

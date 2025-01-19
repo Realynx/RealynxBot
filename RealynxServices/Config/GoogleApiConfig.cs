@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace RealynxBot.Models.Config {
-    internal class GoogleApiConfig {
+namespace RealynxServices.Config {
+    public class GoogleApiConfig {
         public string CustomSearchApiKey { get; set; }
         public string CustomSearchEngineId { get; set; }
         public GoogleApiConfig(IConfiguration configuration) {
