@@ -8,6 +8,15 @@ namespace RealynxBot.Services.LLM.Gpt {
         private readonly ILogger _logger;
         private readonly OpenAiConfig _openAiConfig;
 
+        public string GetPersonalityPrompt {
+            get {
+                return $"""
+                This is your personality rule set for guiding responses:
+                {string.Join(Environment.NewLine, _openAiConfig.ChatBotSystemMessages)}
+                """;
+            }
+        }
+
         public LmPersonalityService(ILogger logger, OpenAiConfig openAiConfig) {
             _logger = logger;
             _openAiConfig = openAiConfig;

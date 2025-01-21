@@ -22,6 +22,7 @@ using RealynxBot.Services.Discord.Commands;
 using RealynxBot.Services.Discord.Interfaces;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM;
+using RealynxBot.Services.LLM.ChatClients;
 using RealynxBot.Services.LLM.Gpt;
 using RealynxBot.Services.Web;
 
@@ -47,7 +48,8 @@ namespace RealynxBot {
                 .AddSingleton<OpenAiConfig>()
                 .AddSingleton<BrowserConfig>()
                 .AddSingleton<GoogleApiConfig>()
-                .AddSingleton<DiscordConfig>();
+                .AddSingleton<DiscordConfig>()
+                .AddSingleton<AiChatClientSettings>();
 
             services
                 .AddSingleton<ILogger, Logger>()
@@ -66,6 +68,9 @@ namespace RealynxBot {
                 .AddSingleton<ILmQueryGenerator, LmQueryGenerator>()
                 .AddSingleton<ILmWebsiteAnalyzer, LmWebsiteAnalyzer>()
                 .AddSingleton<ILmToolInvoker, LmToolInvoker>()
+                .AddSingleton<IGlobalChatContext, GlobalChatContext>()
+                .AddSingleton<ILmStatusGenerator, LmStatusGenerator>()
+                .AddSingleton<ILmContexAwareness, LmContexAwareness>()
 
                 .AddSingleton<IDiscordAiPlugins, DiscordAiPlugins>()
 
@@ -73,13 +78,12 @@ namespace RealynxBot {
                 .AddSingleton<IWebsiteContentService, WebsiteContentService>()
                 .AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>()
 
+                .AddSingleton<OllamaUserChatClient>()
+                .AddSingleton<OllamaToolClient>()
+
                 .AddHostedService<DiscordStartup>()
                 .AddHostedService<SatoriUser>()
                 .AddHostedService<RegisterAiTools>();
-
-
-            services
-                .AddChatClient(new OllamaChatClient("http://10.0.1.123", "phi4:latest"));
 
             services
                 .AddHttpClient<IWebsiteContentService, WebsiteContentService>(client => {

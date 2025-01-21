@@ -29,42 +29,11 @@ namespace RealynxBot.Services.AiTools {
         }
 
         public Task StartAsync(CancellationToken cancellationToken) {
-            var methodInfo = FindMethodInfo<WebsiteContentService>(nameof(_websiteContentService.GrabSiteContent));
-            _lmToolInvoker.AddDIPlugin(_websiteContentService, methodInfo);
-
-            methodInfo = FindMethodInfo<LmWebsiteAnalyzer>(nameof(_lmWebsiteAnalyzer.SearchWeb));
-            _lmToolInvoker.AddDIPlugin(_lmWebsiteAnalyzer, methodInfo);
-
-            methodInfo = FindMethodInfo<HeadlessBrowserService>(nameof(_headlessBrowserService.ExecuteJs));
-            _lmToolInvoker.AddDIPlugin(_headlessBrowserService, methodInfo);
-
-            methodInfo = FindMethodInfo<HeadlessBrowserService>(nameof(_headlessBrowserService.ScreenshotWebsite));
-            _lmToolInvoker.AddDIPlugin(_headlessBrowserService, methodInfo);
-
-            methodInfo = FindMethodInfo<DiscordAiPlugins>(nameof(_discordAiPlugins.CreateThread));
-            _lmToolInvoker.AddDIPlugin(_discordAiPlugins, methodInfo);
-
-            methodInfo = FindMethodInfo<DiscordAiPlugins>(nameof(_discordAiPlugins.ListChannels));
-            _lmToolInvoker.AddDIPlugin(_discordAiPlugins, methodInfo);
-
-            methodInfo = FindMethodInfo<DiscordAiPlugins>(nameof(_discordAiPlugins.GrabProfileInformation));
-            _lmToolInvoker.AddDIPlugin(_discordAiPlugins, methodInfo);
-
-            methodInfo = FindMethodInfo<DiscordAiPlugins>(nameof(_discordAiPlugins.CreateServerInvite));
-            _lmToolInvoker.AddDIPlugin(_discordAiPlugins, methodInfo);
-
-            methodInfo = FindMethodInfo<DiscordAiPlugins>(nameof(_discordAiPlugins.UploadFile));
-            _lmToolInvoker.AddDIPlugin(_discordAiPlugins, methodInfo);
-
-            methodInfo = FindMethodInfo<DiscordAiPlugins>(nameof(_discordAiPlugins.MessageStatusUpdate));
-            _lmToolInvoker.AddDIPlugin(_discordAiPlugins, methodInfo);
-
+            _lmToolInvoker.AddPlugins(_websiteContentService.GetType(), _websiteContentService);
+            _lmToolInvoker.AddPlugins(_lmWebsiteAnalyzer.GetType(), _lmWebsiteAnalyzer);
+            _lmToolInvoker.AddPlugins(_headlessBrowserService.GetType(), _headlessBrowserService);
+            _lmToolInvoker.AddPlugins(_discordAiPlugins.GetType(), _discordAiPlugins);
             return Task.CompletedTask;
-        }
-
-        private MethodInfo FindMethodInfo<T>(string functionName) {
-            return typeof(T).GetMethod(functionName)
-                ?? throw new Exception("Could not find plugin");
         }
 
         public Task StopAsync(CancellationToken cancellationToken) {

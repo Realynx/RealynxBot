@@ -1,15 +1,16 @@
 ﻿using Microsoft.Extensions.AI;
 
 using RealynxBot.Services.Interfaces;
+using RealynxBot.Services.LLM.ChatClients;
 
 namespace RealynxBot.Services.LLM {
     internal class LmQueryGenerator : ILmQueryGenerator {
         private readonly ILogger _logger;
         private readonly IChatClient _chatClient;
 
-        public LmQueryGenerator(ILogger logger, IChatClient chatClient) {
+        public LmQueryGenerator(ILogger logger, OllamaUserChatClient ollamaUserChatClient) {
             _logger = logger;
-            _chatClient = chatClient;
+            _chatClient = ollamaUserChatClient.ChatClient;
         }
 
         private static List<ChatMessage> LanguageModelContext(string prompt) {

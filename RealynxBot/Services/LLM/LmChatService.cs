@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.AI;
 
 using RealynxBot.Services.Interfaces;
+using RealynxBot.Services.LLM.ChatClients;
 
 namespace RealynxBot.Services.LLM {
     internal class LmChatService : ILmChatService {
@@ -8,14 +9,17 @@ namespace RealynxBot.Services.LLM {
         private readonly ILmPersonalityService _lmPersonalityService;
 
         private readonly IChatClient _chatClient;
-        private readonly List<ChatMessage> _chatHistory = new();
+        private readonly IGlobalChatContext _globalChatContext;
 
-        public LmChatService(ILogger logger, ILmPersonalityService lmPersonalityService, IChatClient chatClient) {
+        public LmChatService(ILogger logger, ILmPersonalityService lmPersonalityService, IGlobalChatContext globalChatContext, OllamaUserChatClient ollamaUserChatClient) {
             _lmPersonalityService = lmPersonalityService;
-            _chatClient = chatClient;
+            _chatClient = ollamaUserChatClient.ChatClient;
+            _globalChatContext = globalChatContext;
             _logger = logger;
+        }
 
-            _chatHistory.Add(new(ChatRole.System, """
+        public async Task<string> GenerateResponse(string prompt, string username) {
+            _globalChatContext.AddNewChat(username, $"""
                 You are a chat assistant inside of discord. Your task is to chat with and help users. The following rules apply:
                 1. **Chat messages**:
                     - Chat messages will be prefixed with the user's discord name in example: 'Poofyfox: [message prompt]'.
@@ -23,32 +27,12 @@ namespace RealynxBot.Services.LLM {
                     - DO NOT PING EVERYONE, You can ping individual users.
                 3. **Clean Response**:
                     - Your response should only include the text, do not append anything other then your response text.
-                """));
 
-            _lmPersonalityService.AddPersonalityContext(_chatHistory);
-        }
+                {_lmPersonalityService.GetPersonalityPrompt}
+                """);
 
-        private void PruneContextHistory() {
-            var maxContext = 30;
-            if (_chatHistory.Count > maxContext) {
-                var removeCount = _chatHistory.Count - maxContext;
-                _logger.Debug($"Cleaning up context, removing {removeCount} oldest");
-                _chatHistory.RemoveRange(_chatHistory.Count(i => i.Role == ChatRole.System), removeCount);
-            }
-        }
-
-        public async Task<string> GenerateResponse(string prompt, string username) {
-            _logger.Debug($"Prompting LLM: '{prompt}'");
-
-            PruneContextHistory();
-            _chatHistory.Add(new ChatMessage(ChatRole.User, $"{username}: {prompt}"));
-
-            var chatCompletion = await _chatClient.CompleteAsync(_chatHistory);
-            var chatMessage = chatCompletion.Message.Text ?? string.Empty;
-
-            _chatHistory.Add(new ChatMessage(ChatRole.Assistant, chatMessage));
-
-            return chatMessage;
+            var chatResponse = await _globalChatContext.ChatAndAdd(_chatClient, username, new ChatMessage(ChatRole.User, $"{username}: {prompt}"));
+            return chatResponse;
         }
     }
 }

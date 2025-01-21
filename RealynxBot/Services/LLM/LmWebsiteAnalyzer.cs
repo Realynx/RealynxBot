@@ -7,6 +7,7 @@ using Microsoft.Extensions.AI;
 
 using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
+using RealynxBot.Services.LLM.ChatClients;
 
 namespace RealynxBot.Services.LLM.Gpt {
     internal class LmWebsiteAnalyzer : ILmWebsiteAnalyzer {
@@ -19,14 +20,14 @@ namespace RealynxBot.Services.LLM.Gpt {
         private readonly IChatClient _chatClient;
 
         public LmWebsiteAnalyzer(ILogger logger, OpenAiConfig openAiConfig, IWebsiteContentService websiteContentService,
-            ILmQueryGenerator lmQueryGenerator, IGoogleSearchEngine googleSearchEngine, ILmPersonalityService lmPersonalityService, IChatClient chatClient) {
+            ILmQueryGenerator lmQueryGenerator, IGoogleSearchEngine googleSearchEngine, ILmPersonalityService lmPersonalityService, OllamaUserChatClient ollamaUserChatClient) {
             _logger = logger;
             _openAiConfig = openAiConfig;
             _websiteContentService = websiteContentService;
             _lmQueryGenerator = lmQueryGenerator;
             _googleSearchEngine = googleSearchEngine;
             _lmPersonalityService = lmPersonalityService;
-            _chatClient = chatClient;
+            _chatClient = ollamaUserChatClient.ChatClient;
         }
 
         private static string GetDomainNameWithTld(Result result) {

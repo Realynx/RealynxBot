@@ -42,6 +42,7 @@ namespace RealynxBot.Services.Web {
             _logger.Debug("Browser ready!");
             return browser;
         }
+
         [Description("Screenshots a website with a headless browser and returns the byte array of it's png.")]
         public async Task<byte[]> ScreenshotWebsite(string webAddress, bool fullLength = false) {
             webAddress = EnsureValidWebAddress(webAddress).ToString();

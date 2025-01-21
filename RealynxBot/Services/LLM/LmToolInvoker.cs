@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.AI;
+﻿using System.ComponentModel;
+using System.Reflection;
 
-using System.ComponentModel;
+using Microsoft.Extensions.AI;
 
 using RealynxBot.Services.Interfaces;
-using System.Reflection;
-using System.Net;
-using System.Collections.Generic;
+using RealynxBot.Services.LLM.ChatClients;
 
 namespace RealynxBot.Services.LLM {
     internal class LmToolInvoker : ILmToolInvoker {
@@ -13,13 +12,9 @@ namespace RealynxBot.Services.LLM {
         private readonly IChatClient _chatClient;
         private readonly List<AITool> _aiFunctions = new List<AITool>();
 
-        public LmToolInvoker(ILogger logger) {
+        public LmToolInvoker(ILogger logger, OllamaToolClient ollamaToolClient) {
             _logger = logger;
-
-            _chatClient = new OllamaChatClient("http://10.0.1.123", modelId: "llama3-groq-tool-use:8b")
-            .AsBuilder()
-            .UseFunctionInvocation()
-            .Build();
+            _chatClient = ollamaToolClient.ChatClient;
         }
         public IList<AITool> GetTools {
             get {
@@ -27,13 +22,7 @@ namespace RealynxBot.Services.LLM {
             }
         }
 
-        public enum PlginType {
-            Common = 0,
-            Discord,
-            Misc
-        }
-
-        public void AddPluginsOfType(Assembly pluginAssembly, PlginType plginType) {
+        public void AddPluginsOfType(Assembly pluginAssembly) {
             ArgumentNullException.ThrowIfNull(pluginAssembly);
 
             foreach (var type in pluginAssembly.GetTypes()) {
@@ -45,12 +34,18 @@ namespace RealynxBot.Services.LLM {
                 }
             }
 
-            Console.WriteLine($"Added {_aiFunctions.Count} AI functions for plugin type {plginType}");
+            Console.WriteLine($"Added {_aiFunctions.Count} AI functions");
         }
 
-        public void AddDIPlugin<T>(T instance, MethodInfo function, AIFunctionFactoryCreateOptions? options = null) {
-            var aiFunction = AIFunctionFactory.Create(function, instance, options);
-            _aiFunctions.Add(aiFunction);
+        public void AddPlugins(Type pluginType, object instance) {
+            foreach (var method in pluginType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)) {
+                if (method is MethodInfo methodInfo && method.GetCustomAttribute<DescriptionAttribute>() is not null) {
+                    var aiFunction = AIFunctionFactory.Create(methodInfo, instance, null);
+                    _aiFunctions.Add(aiFunction);
+                }
+            }
+
+            Console.WriteLine($"Added {_aiFunctions.Count} AI functions for plugin type {pluginType.Name}");
         }
 
         public async Task<string> LmToolCall(List<ChatMessage> chatMessages) {

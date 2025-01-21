@@ -3,15 +3,16 @@
 using Newtonsoft.Json;
 
 using RealynxBot.Services.Interfaces;
+using RealynxBot.Services.LLM.ChatClients;
 
 namespace RealynxBot.Services.LLM {
     internal class LmCodeGenerator : ILmCodeGenerator {
         private readonly ILogger _logger;
         private readonly IChatClient _chatClient;
 
-        public LmCodeGenerator(ILogger logger, IChatClient chatClient) {
+        public LmCodeGenerator(ILogger logger, OllamaUserChatClient ollamaUserChatClient) {
             _logger = logger;
-            _chatClient = chatClient;
+            _chatClient = ollamaUserChatClient.ChatClient;
         }
 
         private static List<ChatMessage> GenerateLmPrompt(string prompt) {
