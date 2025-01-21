@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.ComponentModel;
+using System.Text;
 
 using Google.Apis.CustomSearchAPI.v1.Data;
 
@@ -73,6 +74,7 @@ namespace RealynxBot.Services.LLM.Gpt {
             return queryContext;
         }
 
+        [Description("Will query first 10 google results and visit each page to summerize the contents as a single AI web search. Uses LLM to produce summary.")]
         public async Task<string> SearchWeb(string googlePrompt) {
             _logger.Info($"User query prompt: {googlePrompt}");
 

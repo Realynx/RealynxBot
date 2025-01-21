@@ -50,39 +50,5 @@ namespace RealynxBot.Services.LLM {
 
             return chatMessage;
         }
-
-        public async Task<string> GenerateStatus() {
-            var contextHistory = new List<ChatMessage>();
-            contextHistory.AddRange(_chatHistory
-                .Where(i => i.Role == ChatRole.User || i.Role == ChatRole.Assistant).ToArray());
-
-            _lmPersonalityService.AddPersonalityContext(contextHistory);
-            contextHistory.Add(new ChatMessage(ChatRole.System, """
-                You are a chat assistant inside of discord. Your objective is to create a funny discord status given the current chat history context.
-
-                The code that invokes this prompt is as follows:
-                ```cs
-                    var currentStatus = await _lmChatService.GenerateStatus();
-                    await _discordSocketClient.SetGameAsync(currentStatus);
-                ```
-
-                Here are the rules to follow;
-                1. **Clean Response**:
-                    - Your response should only include the text to set as your current status, do not append anything other then your response text.
-                    - Your response must not be directed at a user.
-                    - The response is the bot's current activity status.
-                2. **Concise**:
-                    - Your created status will be set as the bot's current "playing" status. That users see when they view your profile.
-                    - It must fit within an activity status, it cannot be too long!
-                    - You must only produce 4 - 8 words.
-                """));
-
-            var chatCompletion = await _chatClient.CompleteAsync(contextHistory, new ChatOptions() {
-                MaxOutputTokens = 15,
-            });
-
-            var statusMessage = chatCompletion.Message.Text ?? string.Empty;
-            return statusMessage;
-        }
     }
 }

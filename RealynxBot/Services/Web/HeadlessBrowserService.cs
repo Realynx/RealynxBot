@@ -1,4 +1,6 @@
-﻿using PuppeteerSharp;
+﻿using System.ComponentModel;
+
+using PuppeteerSharp;
 
 using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
@@ -40,7 +42,7 @@ namespace RealynxBot.Services.Web {
             _logger.Debug("Browser ready!");
             return browser;
         }
-
+        [Description("Screenshots a website with a headless browser and returns the byte array of it's png.")]
         public async Task<byte[]> ScreenshotWebsite(string webAddress, bool fullLength = false) {
             webAddress = EnsureValidWebAddress(webAddress).ToString();
 
@@ -101,6 +103,7 @@ namespace RealynxBot.Services.Web {
             throw new ArgumentException("Invalid web address. Could not create a valid URI.", nameof(webAddress));
         }
 
+        [Description("Executes the provided JavaScript code within a secure web-browser sandbox and returns the output as an array of strings. Use this to dynamically evaluate and execute JavaScript.")]
         public async Task<string[]> ExecuteJs(string js) {
             _logger.Info($"Executeing JavaScrpipt\n{js}");
 

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.ComponentModel;
+using System.Text;
 using System.Text.RegularExpressions;
 
 using HtmlAgilityPack;
@@ -24,6 +25,7 @@ namespace RealynxBot.Services.Web {
             _httpClient = httpClient;
         }
 
+        [Description("Fetches and extracts the textual content of the specified webpage, removing all HTML tags. Optionally, limits the extracted content to the specified character count. Char limit 0 means all text, use this unless specified not to.")]
         public async Task<string> GrabSiteContent(string url, int charLimit = 0) {
             _logger.Info($"Visiting '{url}'");
 
@@ -94,7 +96,7 @@ namespace RealynxBot.Services.Web {
                 contentBuilder.Append(' ');
             }
 
-            var bodyContent = contentBuilder.Replace("\n", string.Empty).Replace("\r", string.Empty).Trim().ToString();
+            var bodyContent = contentBuilder.Replace("\n", string.Empty).Replace("\r", string.Empty).ToString().Trim();
             bodyContent = MultiSpaceRegex.Replace(bodyContent, " ");
             return bodyContent;
         }

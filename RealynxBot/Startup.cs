@@ -16,6 +16,7 @@ using Polly.Extensions.Http;
 using RealynxBot.Interfaces;
 using RealynxBot.Models.Config;
 using RealynxBot.Services;
+using RealynxBot.Services.AiTools;
 using RealynxBot.Services.Discord;
 using RealynxBot.Services.Discord.Commands;
 using RealynxBot.Services.Discord.Interfaces;
@@ -64,13 +65,17 @@ namespace RealynxBot {
                 .AddSingleton<ILmCodeGenerator, LmCodeGenerator>()
                 .AddSingleton<ILmQueryGenerator, LmQueryGenerator>()
                 .AddSingleton<ILmWebsiteAnalyzer, LmWebsiteAnalyzer>()
+                .AddSingleton<ILmToolInvoker, LmToolInvoker>()
+
+                .AddSingleton<IDiscordAiPlugins, DiscordAiPlugins>()
 
                 .AddSingleton<IGoogleSearchEngine, GoogleSearchEngine>()
                 .AddSingleton<IWebsiteContentService, WebsiteContentService>()
                 .AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>()
 
                 .AddHostedService<DiscordStartup>()
-                .AddHostedService<SatoriUser>();
+                .AddHostedService<SatoriUser>()
+                .AddHostedService<RegisterAiTools>();
 
 
             services
