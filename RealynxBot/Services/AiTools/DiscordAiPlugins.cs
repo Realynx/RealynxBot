@@ -10,13 +10,14 @@ namespace RealynxBot.Services.AiTools {
     internal class DiscordAiPlugins : IDiscordAiPlugins {
         private readonly ILogger _logger;
         private readonly DiscordSocketClient _discordSocketClient;
+        private readonly IHeadlessBrowserService _headlessBrowserService;
         private readonly SocketGuild _mainGuild;
         private readonly SocketTextChannel _mainChannel;
 
-        public DiscordAiPlugins(ILogger logger, DiscordSocketClient discordSocketClient) {
+        public DiscordAiPlugins(ILogger logger, DiscordSocketClient discordSocketClient, IHeadlessBrowserService headlessBrowserService) {
             _logger = logger;
             _discordSocketClient = discordSocketClient;
-
+            _headlessBrowserService = headlessBrowserService;
             _mainGuild = _discordSocketClient.Guilds.Single(i => i.Name == "Realynx Community");
             _mainChannel = _mainGuild.TextChannels.Single(i => i.Name == "satori");
         }
@@ -37,10 +38,12 @@ namespace RealynxBot.Services.AiTools {
             return invite.Url;
         }
 
-        [Description("Uploads a fille to the current channel. This can be any type of file even images.")]
-        public async Task UploadFile(string fileName, byte[] fileData) {
-            using var fileMemStream = new MemoryStream(fileData);
-            var attachment = new FileAttachment(fileMemStream, fileName);
+        [Description("Screenshots a website with a headless browser and uploads it to the current discord channel.")]
+        public async Task ScreenshotWebsite(string websiteUrl, bool fullsize = false) {
+            var screenshotData = await _headlessBrowserService.ScreenshotWebsite(websiteUrl, fullsize);
+            using var fileMemStream = new MemoryStream(screenshotData);
+
+            var attachment = new FileAttachment(fileMemStream, "website-screenshot.png");
             await _mainChannel.SendFileAsync(attachment);
         }
 

@@ -5,14 +5,11 @@ using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
 
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using Polly;
-using Polly.Extensions.Http;
-
+using RealynxBot.Extensions;
 using RealynxBot.Interfaces;
 using RealynxBot.Models.Config;
 using RealynxBot.Services;
@@ -21,9 +18,6 @@ using RealynxBot.Services.Discord;
 using RealynxBot.Services.Discord.Commands;
 using RealynxBot.Services.Discord.Interfaces;
 using RealynxBot.Services.Interfaces;
-using RealynxBot.Services.LLM;
-using RealynxBot.Services.LLM.ChatClients;
-using RealynxBot.Services.LLM.Gpt;
 using RealynxBot.Services.Web;
 
 namespace RealynxBot {
@@ -62,24 +56,7 @@ namespace RealynxBot {
                 .AddSingleton<ICommandHandlerService, CommandHandlerService>()
                 .AddSingleton<IDiscordResponseService, DiscordResponseService>()
 
-                .AddSingleton<ILmPersonalityService, LmPersonalityService>()
-                .AddSingleton<ILmChatService, LmChatService>()
-                .AddSingleton<ILmCodeGenerator, LmCodeGenerator>()
-                .AddSingleton<ILmQueryGenerator, LmQueryGenerator>()
-                .AddSingleton<ILmWebsiteAnalyzer, LmWebsiteAnalyzer>()
-                .AddSingleton<ILmToolInvoker, LmToolInvoker>()
-                .AddSingleton<IGlobalChatContext, GlobalChatContext>()
-                .AddSingleton<ILmStatusGenerator, LmStatusGenerator>()
-                .AddSingleton<ILmContexAwareness, LmContexAwareness>()
-
-                .AddSingleton<IDiscordAiPlugins, DiscordAiPlugins>()
-
-                .AddSingleton<IGoogleSearchEngine, GoogleSearchEngine>()
-                .AddSingleton<IWebsiteContentService, WebsiteContentService>()
-                .AddSingleton<IHeadlessBrowserService, HeadlessBrowserService>()
-
-                .AddSingleton<OllamaUserChatClient>()
-                .AddSingleton<OllamaToolClient>()
+                .AddRealynxAiServices()
 
                 .AddHostedService<DiscordStartup>()
                 .AddHostedService<SatoriUser>()
@@ -91,12 +68,6 @@ namespace RealynxBot {
                     client.DefaultRequestHeaders.UserAgent.ParseAdd("Realynx_DiscordBot/1.0 (Windows; Linux; https://github.com/Realynx)");
                     client.Timeout = TimeSpan.FromSeconds(4);
                 });
-        }
-
-        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() {
-            return HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
 
         private void SetupDiscordSingletons(out DiscordSocketClient socketClient) {

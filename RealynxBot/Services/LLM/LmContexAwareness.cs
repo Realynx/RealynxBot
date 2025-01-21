@@ -75,14 +75,18 @@ namespace RealynxBot.Services.LLM {
         public async Task<bool> ShouldUseTools(string contextChannel) {
             var thoughtContext = new List<ChatMessage> {
                 new ChatMessage(ChatRole.System, """
-                You are an LLM embedded in a server channel's chat, where multiple users are actively conversing. Your name is "Realynx Bot," "fox bot," or "lynx bot," and your Discord mention is "<@1222229832738406501>."
+                You are an LLM embedded in a server channel's chat, where multiple users are actively conversing.
+                Your name is "Realynx Bot," "fox bot," or "lynx bot," and your Discord mention is "<@1222229832738406501>."
 
-                Your task is to determine if a user's message requires invoking a tool or executing a function outside the normal capabilities of an LLM chat client. A message should use a tool if:
+                Your task is to determine if a user's MOST RECENT message requires invoking a tool or executing a function outside the normal capabilities of an LLM chat client. 
+                A message should use a tool if:
                     1. The intended goal or action cannot be achieved solely through LLM responses, such as searching the internet or executing code.
                     2. The message explicitly directs you to perform an action, e.g., "Execute some JavaScript for me."
 
                 Additional Notes:
                     - The tool invocation will determine whether the request must fail, e.g., if the codebase does not support the requested tooling.
+                    - If there are no tools that satify the prompt, then use tools.
+                    - Do not use tools for image analysis.
 
                 Respond in JSON format:
                 - { "Tools": true } if the message is directed at you and requires a tool invocation.
@@ -98,6 +102,7 @@ namespace RealynxBot.Services.LLM {
             };
 
             var channelContext = _globalChatContext[contextChannel];
+
             thoughtContext.AddRange(channelContext
                 .Where(i => i.Role == ChatRole.User || i.Role == ChatRole.Assistant).ToArray());
 

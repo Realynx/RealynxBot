@@ -1,4 +1,7 @@
-﻿using Discord;
+﻿using System.Collections.Generic;
+using System.Text;
+
+using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 
@@ -21,6 +24,7 @@ namespace RealynxBot.Services.Discord {
         private readonly IGlobalChatContext _globalChatContext;
         private readonly ILmStatusGenerator _lmStatusGenerator;
         private readonly ILmContexAwareness _lmContexAwareness;
+        private readonly ILmComputerVision _lmComputerVision;
         private readonly Dictionary<ISocketMessageChannel, DateTime> _activeChannels = new();
 
 
@@ -30,7 +34,8 @@ namespace RealynxBot.Services.Discord {
         public SatoriUser(ILogger logger, DiscordSocketClient discordSocketClient,
             IDiscordResponseService discordResponseService, OllamaUserChatClient ollamaChatClient,
             ILmPersonalityService lmPersonalityService, ILmToolInvoker lmToolInvoker,
-            IGlobalChatContext globalChatContext, ILmStatusGenerator lmStatusGenerator, ILmContexAwareness lmContexAwareness) {
+            IGlobalChatContext globalChatContext, ILmStatusGenerator lmStatusGenerator,
+            ILmContexAwareness lmContexAwareness, ILmComputerVision lmComputerVision) {
             _logger = logger;
             _discordSocketClient = discordSocketClient;
             _discordResponseService = discordResponseService;
@@ -39,6 +44,7 @@ namespace RealynxBot.Services.Discord {
             _globalChatContext = globalChatContext;
             _lmStatusGenerator = lmStatusGenerator;
             _lmContexAwareness = lmContexAwareness;
+            _lmComputerVision = lmComputerVision;
             _chatClient = ollamaChatClient.ChatClient;
         }
 
@@ -59,14 +65,21 @@ namespace RealynxBot.Services.Discord {
                 return;
             }
 
-            if (socketMessage.Channel.Name.Contains("satori", StringComparison.OrdinalIgnoreCase)) {
-                var channelId = socketMessage.Channel.Id.ToString();
-                _globalChatContext.AddNewChat(channelId, $"""
+            await ExecuteSatoriLLM(socketMessage);
+        }
+
+        public async Task ExecuteSatoriLLM(SocketMessage socketMessage) {
+            //if (socketMessage.Channel.Name.Contains("satori", StringComparison.OrdinalIgnoreCase)) {
+
+            //}
+
+            var channelId = socketMessage.Channel.Id.ToString();
+            _globalChatContext.AddNewChat(channelId, $"""
                         You're a member of a Discord server, and your job is to have friendly, casual conversations with others.
                         Follow these guidelines to keep things running smoothly:
 
                         1. **Chat Messages:**
-                           - Messages will start with the user's Discord name, like: `Poofyfox: [message prompt]`.
+                           - Messages will start with the user's Discord name and time sent, like: `Poofyfox: [message prompt]`.
                            - Treat every message directed at you as part of the ongoing chat, unless it’s clearly not.
                            - If a message is replying to something else, it will be marked as a response, so make sure to follow the flow.
 
@@ -75,6 +88,7 @@ namespace RealynxBot.Services.Discord {
                            - Use pings only when it makes the conversation clearer or when addressing someone specifically.
 
                         3. **Clean and Straightforward Responses:**
+                           - Do not append the time to your messages.
                            - Only send the message text—no extra info, formatting, or comments.
                            - Keep your replies short and relevant, just like you would in a regular chat.
 
@@ -86,24 +100,63 @@ namespace RealynxBot.Services.Discord {
                            {_lmPersonalityService.GetPersonalityPrompt}
                         """);
 
-                if (!_activeChannels.ContainsKey(socketMessage.Channel)) {
-                    _activeChannels.Add(socketMessage.Channel, DateTime.Now);
-                }
-                else {
-                    _activeChannels[socketMessage.Channel] = DateTime.Now;
-                }
+            if (!_activeChannels.ContainsKey(socketMessage.Channel)) {
+                _activeChannels.Add(socketMessage.Channel, DateTime.Now);
+            }
+            else {
+                _activeChannels[socketMessage.Channel] = DateTime.Now;
+            }
 
-                var refContext = await GetRefrenceMessage(socketMessage);
-                var userMessageContext = $"{socketMessage.Author.Username}: {socketMessage.Content}{refContext}";
-                _globalChatContext.AddMessage(channelId, new ChatMessage(ChatRole.User, userMessageContext));
+            var refContext = await GetRefrenceMessage(socketMessage);
+            var userMessageContext = $"[{socketMessage.CreatedAt:T}] {socketMessage.Author.Username}: {socketMessage.CleanContent}{refContext}";
+            _globalChatContext.AddMessage(channelId, new ChatMessage(ChatRole.User, userMessageContext));
 
-                if (await _lmContexAwareness.ShouldRespond(socketMessage.Channel.Id.ToString())) {
-                    await socketMessage.Channel.TriggerTypingAsync();
+            if (await _lmContexAwareness.ShouldRespond(socketMessage.Channel.Id.ToString())) {
+                await socketMessage.Channel.TriggerTypingAsync();
 
-                    var llmResponse = await GenerateResponse(socketMessage.Channel);
-                    await FollowUpChunkedMessage(socketMessage.Channel, llmResponse);
+                await AddImageContextData(socketMessage, channelId);
+
+                var llmResponse = await GenerateResponse(socketMessage.Channel);
+                await FollowUpChunkedMessage(socketMessage.Channel, llmResponse);
+            }
+        }
+
+        private async Task AddImageContextData(SocketMessage socketMessage, string channelId) {
+            var imageContext = new StringBuilder("""
+            Below are the descriptions from the Image to Text LLM model of all the attached images:
+
+            """);
+
+            var attachments = new List<Attachment>();
+            attachments.AddRange(socketMessage.Attachments);
+
+            var refMessageId = socketMessage.Reference?.MessageId.GetValueOrDefault() ?? 0;
+            if (refMessageId != 0) {
+                var refMessage = await socketMessage.Channel.GetMessageAsync(refMessageId);
+                attachments.AddRange(refMessage.Attachments.Select(i => (Attachment)i));
+            }
+
+            if (attachments.Count == 0) {
+                return;
+            }
+
+            foreach (var attachment in attachments) {
+                if (attachment.ContentType.StartsWith("image", StringComparison.OrdinalIgnoreCase)) {
+                    try {
+                        var attachmentcontent = await new HttpClient().GetAsync(attachment.ProxyUrl);
+                        attachmentcontent.EnsureSuccessStatusCode();
+
+                        var attachmentBytes = await attachmentcontent.Content.ReadAsByteArrayAsync();
+                        imageContext.AppendLine(await _lmComputerVision.DescribeImage(_globalChatContext[channelId], attachmentBytes, attachment.ContentType));
+                    }
+                    catch (Exception) {
+
+                    }
                 }
             }
+
+            _globalChatContext.AddMessage(channelId, new ChatMessage(ChatRole.Assistant, imageContext.ToString()));
+
         }
 
         private async Task<string> GenerateResponse(ISocketMessageChannel channel) {

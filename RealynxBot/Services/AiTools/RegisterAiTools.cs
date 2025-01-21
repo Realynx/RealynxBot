@@ -1,12 +1,7 @@
-﻿
-using System.Reflection;
-
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM;
-using RealynxBot.Services.LLM.Gpt;
-using RealynxBot.Services.Web;
 
 namespace RealynxBot.Services.AiTools {
     internal class RegisterAiTools : IHostedService {

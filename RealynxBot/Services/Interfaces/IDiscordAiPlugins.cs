@@ -5,6 +5,6 @@
         Task<string> GrabProfileInformation(string username);
         IList<string> ListChannels();
         Task MessageStatusUpdate(string status);
-        Task UploadFile(string fileName, byte[] fileData);
+        Task ScreenshotWebsite(string websiteUrl, bool fullsize = false);
     }
 }

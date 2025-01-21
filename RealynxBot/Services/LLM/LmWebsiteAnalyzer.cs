@@ -75,7 +75,7 @@ namespace RealynxBot.Services.LLM.Gpt {
             return queryContext;
         }
 
-        [Description("Will query first 10 google results and visit each page to summerize the contents as a single AI web search. Uses LLM to produce summary.")]
+        [Description("Will query first 10 google results and visit each page to summerize the contents as a single AI web search. Uses LLM to produce summary, you should simply use the response if you want the best summary.")]
         public async Task<string> SearchWeb(string googlePrompt) {
             _logger.Info($"User query prompt: {googlePrompt}");
 
@@ -117,7 +117,7 @@ namespace RealynxBot.Services.LLM.Gpt {
                 stringBuilder.AppendLine($"Link: {result.Link}");
                 stringBuilder.AppendLine($"Description: {result.Snippet}");
 
-                var websiteTextualContent = await _websiteContentService.GrabSiteContent(result.Link, 3500);
+                var websiteTextualContent = await _websiteContentService.GrabSiteContent(result.Link, 20000);
                 _logger.Debug($"{result.Link}\n{websiteTextualContent}");
                 stringBuilder.AppendLine($"Body Text Content: {websiteTextualContent}");
                 siteResetEvent.Set();

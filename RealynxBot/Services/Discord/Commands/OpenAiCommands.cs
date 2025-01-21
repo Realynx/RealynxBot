@@ -26,7 +26,7 @@ namespace RealynxBot.Services.Discord.Commands {
 
         [CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]
         [IntegrationType(ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall)]
-        [SlashCommand("gpt", "Replies with an AI generated response from GPT.")]
+        [SlashCommand("gpt", "Replies with an AI generated response from LLM.")]
         public async Task PromptAi(string prompt) {
             await DeferAsync();
 
