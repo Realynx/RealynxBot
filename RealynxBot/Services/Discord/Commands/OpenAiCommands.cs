@@ -1,4 +1,8 @@
-﻿using Discord;
+﻿using System.Data;
+using System.Xml.Linq;
+
+using Discord;
+using Discord.Commands;
 using Discord.Interactions;
 
 using RealynxBot.Services.Discord.Interfaces;
@@ -13,15 +17,43 @@ namespace RealynxBot.Services.Discord.Commands {
         private readonly ILmCodeGenerator _lmCodeGenerator;
         private readonly IHeadlessBrowserService _headlessBrowserService;
         private readonly ILmWebsiteAnalyzer _lmWebsiteAnalyzer;
+        private readonly ILmCorrectGrammar _lmCorrectGrammar;
+        private readonly ILmSpeechGenerator _lmSpeechGenerator;
 
-        public OpenAiCommands(ILmChatService gptChatService, ILogger logger, IDiscordResponseService discordResponseService,
-            ILmCodeGenerator lmCodeGenerator, IHeadlessBrowserService headlessBrowserService, ILmWebsiteAnalyzer lmWebsiteAnalyzer) {
+        internal OpenAiCommands(ILmChatService gptChatService, ILogger logger, IDiscordResponseService discordResponseService,
+            ILmCodeGenerator lmCodeGenerator, IHeadlessBrowserService headlessBrowserService, ILmWebsiteAnalyzer lmWebsiteAnalyzer,
+            ILmCorrectGrammar lmCorrectGrammar, ILmSpeechGenerator lmSpeechGenerator) {
             _gptChatService = gptChatService;
             _logger = logger;
             _discordResponseService = discordResponseService;
             _lmCodeGenerator = lmCodeGenerator;
             _headlessBrowserService = headlessBrowserService;
             _lmWebsiteAnalyzer = lmWebsiteAnalyzer;
+            _lmCorrectGrammar = lmCorrectGrammar;
+            _lmSpeechGenerator = lmSpeechGenerator;
+        }
+
+        //[CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]
+        //[MessageCommand("TTS")]
+        //public async Task TextToSpeech(IMessage message) {
+        //    await DeferAsync();
+
+        //    var audioData = await _lmSpeechGenerator.GenerateWavAudio(message.CleanContent);
+        //    using var audioStream = new MemoryStream(audioData);
+
+        //    var audioFile = new FileAttachment(audioStream, "tts-audio.wav");
+        //    await FollowupWithFileAsync(audioFile);
+        //}
+
+        [CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]
+        [MessageCommand("GrammarCheck")]
+        public async Task CorrectGrammar(IMessage message) {
+            await DeferAsync();
+
+            var corrections = await _lmCorrectGrammar.CorrectGrammar(message.CleanContent);
+            foreach (var chunk in _discordResponseService.ChunkMessageToLines(corrections)) {
+                await FollowupAsync(chunk);
+            }
         }
 
         [CommandContextType(InteractionContextType.BotDm, InteractionContextType.PrivateChannel, InteractionContextType.Guild)]

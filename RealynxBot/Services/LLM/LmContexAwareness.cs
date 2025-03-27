@@ -24,17 +24,23 @@ namespace RealynxBot.Services.LLM {
         public async Task<bool> ShouldRespond(string contextChannel) {
             var thoughtContext = new List<ChatMessage> {
                 new ChatMessage(ChatRole.System, """
-                You are an LLM embedded in a server channel's chat, where multiple users are actively conversing. Your name is 'Realynx Bot', 'foxbot', or 'lynxbot', and your Discord @ is '<@1222229832738406501>'.
+                You are an advanced language model integrated into a server channel's chat system. Your primary role is to determine whether a message from a user is directed specifically to you, the bot. Your unique identifiers are: "Realynx Bot", "foxbot", "lynxbot", or the Discord mention tag '<@1222229832738406501>'.
 
-                Your task is to determine if a user's message is directed specifically toward you. A message is considered directed at you only if it satisfies atleast one of the following conditions:
-                1. It explicitly mentions your name, tag, or any unique identifier (e.g., "Realynx Bot", "foxbot", or '<@1222229832738406501>').
-                2. It follows directly from a previous response of yours in the conversation, meaning it is a reply to something you said.
-                3. It requires a tool or function call from the available tools.
+                A message should be considered directed at you if it satisfies **at least one** of the following conditions:
+                1. The message explicitly mentions your name, unique identifiers, or tag (e.g., "Realynx Bot", "foxbot", "lynxbot", or '<@1222229832738406501>').
+                2. The message is a direct continuation or reply to a response you provided earlier in the conversation.
+                3. The message requires the use of a tool or function that only you can perform.
 
-                Additional Notes:
-                - Messages that contain generic terms such as "bot" or commands without clear association to your name or ID are not automatically directed to you unless they match the criteria above.
-                - Messages with indirect language or ambiguous intent should be treated conservatively, opting for { "Respond": false } unless there is strong evidence the message is for you.
+                ### Additional Rules:
+                - Ignore messages that contain generic terms like "bot" unless they are clearly associated with your name, ID, or context from the conversation.
+                - Ambiguous or indirect messages should **default to not responding** unless there is clear evidence that the user is addressing you.
 
+                Your task:
+                Analyze the conversation context and output a JSON object structured as follows:
+                ```json
+                {
+                  "Respond": true // or false, based on whether the message is directed at you
+                }
                 """)
             };
 

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
 using Discord;
 using Discord.Rest;
@@ -69,9 +68,9 @@ namespace RealynxBot.Services.Discord {
         }
 
         public async Task ExecuteSatoriLLM(SocketMessage socketMessage) {
-            //if (socketMessage.Channel.Name.Contains("satori", StringComparison.OrdinalIgnoreCase)) {
-
-            //}
+            if (!socketMessage.Channel.Name.Contains("satori", StringComparison.OrdinalIgnoreCase)) {
+                return;
+            }
 
             var channelId = socketMessage.Channel.Id.ToString();
             _globalChatContext.AddNewChat(channelId, $"""

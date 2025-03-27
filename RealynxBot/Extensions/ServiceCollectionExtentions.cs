@@ -14,6 +14,8 @@ namespace RealynxBot.Extensions {
                 .AddSingleton<OllamaUserChatClient>()
                 .AddSingleton<OllamaToolClient>()
                 .AddSingleton<OllamaImageClient>()
+                .AddSingleton<OllamaGrammarClient>()
+                .AddSingleton<OllamaSpeechClient>()
 
                 .AddSingleton<ILmPersonalityService, LmPersonalityService>()
                 .AddSingleton<ILmChatService, LmChatService>()
@@ -26,6 +28,8 @@ namespace RealynxBot.Extensions {
                 .AddSingleton<ILmContexAwareness, LmContexAwareness>()
                 .AddSingleton<IDiscordAiPlugins, DiscordAiPlugins>()
                 .AddSingleton<ILmComputerVision, LmComputerVision>()
+                .AddSingleton<ILmCorrectGrammar, LmCorrectGrammar>()
+                .AddSingleton<ILmSpeechGenerator, LmSpeechGenerator>()
 
                 .AddSingleton<IGoogleSearchEngine, GoogleSearchEngine>()
                 .AddSingleton<IWebsiteContentService, WebsiteContentService>()

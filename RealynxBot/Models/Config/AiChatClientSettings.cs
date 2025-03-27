@@ -9,5 +9,8 @@ namespace RealynxBot.Models.Config {
         public string HttpEndpoint { get; set; }
         public string ChatModel { get; set; }
         public string ToolModel { get; set; }
+        public string ImageModel { get; set; }
+        public string GrammarModel { get; set; }
+        public string SpeechModel { get; set; }
     }
 }
