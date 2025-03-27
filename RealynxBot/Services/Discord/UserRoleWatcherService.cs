@@ -3,7 +3,8 @@ using Discord.WebSocket;
 
 using RealynxBot.Models.Config;
 using RealynxBot.Services.Discord.Interfaces;
-using RealynxBot.Services.Interfaces;
+
+using RealynxServices.Interfaces;
 
 namespace RealynxBot.Services.Discord {
     public class UserRoleWatcherService : IUserRoleWatcherService {

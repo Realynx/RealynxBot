@@ -25,9 +25,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\RealynxServices\RealynxServices.csproj" />
+	  <ProjectReference Include="..\StepPlanModule.Discord\StepPlanModule.Discord.csproj" />
+	  <ProjectReference Include="..\StepPlanModule\StepPlanModule.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
+
+	<ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>

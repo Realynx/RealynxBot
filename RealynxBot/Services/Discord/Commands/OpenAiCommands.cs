@@ -9,6 +9,8 @@ using RealynxBot.Services.Discord.Interfaces;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM;
 
+using RealynxServices.Interfaces;
+
 namespace RealynxBot.Services.Discord.Commands {
     public class OpenAiCommands : InteractionModuleBase<SocketInteractionContext> {
         private readonly ILmChatService _gptChatService;

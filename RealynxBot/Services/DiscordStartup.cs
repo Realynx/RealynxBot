@@ -2,7 +2,8 @@
 using Microsoft.Extensions.Hosting;
 
 using RealynxBot.Services.Discord.Interfaces;
-using RealynxBot.Services.Interfaces;
+
+using RealynxServices.Interfaces;
 
 namespace RealynxBot.Services {
     internal class DiscordStartup : IHostedService {

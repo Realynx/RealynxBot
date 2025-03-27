@@ -3,6 +3,8 @@
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM.ChatClients;
 
+using RealynxServices.Interfaces;
+
 namespace RealynxBot.Services.LLM {
     internal class LmQueryGenerator : ILmQueryGenerator {
         private readonly ILogger _logger;

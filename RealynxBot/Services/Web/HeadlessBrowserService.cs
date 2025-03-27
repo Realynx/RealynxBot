@@ -5,6 +5,8 @@ using PuppeteerSharp;
 using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
 
+using RealynxServices.Interfaces;
+
 namespace RealynxBot.Services.Web {
     public class HeadlessBrowserService : IHeadlessBrowserService {
         private readonly ILogger _logger;
