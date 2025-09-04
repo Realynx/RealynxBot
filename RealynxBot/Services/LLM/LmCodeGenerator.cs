@@ -2,6 +2,7 @@
 
 using Newtonsoft.Json;
 
+using RealynxBot.Extensions;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM.ChatClients;
 
@@ -49,11 +50,10 @@ namespace RealynxBot.Services.LLM {
             _logger.Info($"Generating java script code: {prompt}");
 
             var languageModelContext = GenerateLmPrompt(prompt);
-            var clientResult = await _chatClient.CompleteAsync(languageModelContext, new ChatOptions() {
+            var llmMessage = await _chatClient.GetTextResponse(languageModelContext, new ChatOptions() {
                 Temperature = .05f,
                 ResponseFormat = ChatResponseFormat.Json
             });
-            var llmMessage = clientResult.Message.Text ?? string.Empty;
 
             var jsonResponse = new { EvalCode = "" };
             try {

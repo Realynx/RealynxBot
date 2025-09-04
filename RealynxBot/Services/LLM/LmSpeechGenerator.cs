@@ -19,16 +19,20 @@ namespace RealynxBot.Services.LLM {
                 new(ChatRole.User, speechText)
             };
 
-            var chatResponse = await _chatClient.CompleteAsync<AudioContent>(thoughtContext);
-            var audioContent = chatResponse.Message.Contents
-                .OfType<AudioContent>()
-                .FirstOrDefault();
+            //var chatResponse = await _chatClient.CompleteAsync<AudioContent>(thoughtContext);
+            //var audioContent = chatResponse.Message.Contents
+            //    .OfType<AudioContent>()
+            //    .FirstOrDefault();
 
-            if (audioContent == null) {
-                throw new Exception("Failed to generate speech. Text response received.");
-            }
 
-            return audioContent.Data!.Value.ToArray();
+
+            //if (audioContent == null) {
+            //    throw new Exception("Failed to generate speech. Text response received.");
+            //}
+
+            //return audioContent.Data!.Value.ToArray();
+
+            throw new NotImplementedException();
         }
     }
 }

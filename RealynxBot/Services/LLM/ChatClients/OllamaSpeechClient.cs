@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.AI;
 
+using OllamaSharp;
+
 using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
 
@@ -14,9 +16,7 @@ namespace RealynxBot.Services.LLM.ChatClients {
             _logger = logger;
             _aiChatClientSettings = aiChatClientSettings;
 
-            ChatClient = new OllamaChatClient(_aiChatClientSettings.HttpEndpoint, modelId: _aiChatClientSettings.SpeechModel)
-                .AsBuilder()
-                .Build();
+            ChatClient = new OllamaApiClient(_aiChatClientSettings.HttpEndpoint, defaultModel: _aiChatClientSettings.SpeechModel);
         }
     }
 }

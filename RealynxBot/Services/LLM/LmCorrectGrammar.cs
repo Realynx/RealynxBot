@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.AI;
 
+using RealynxBot.Extensions;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM.ChatClients;
 
@@ -23,8 +24,8 @@ namespace RealynxBot.Services.LLM {
                 """)
             };
 
-            var chatResponse = await _chatClient.CompleteAsync(thoughtContext);
-            return chatResponse.Message.Text ?? string.Empty;
+            var chatResponse = await _chatClient.GetTextResponse(thoughtContext);
+            return chatResponse;
         }
     }
 }

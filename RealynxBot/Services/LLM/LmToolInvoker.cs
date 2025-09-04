@@ -4,6 +4,7 @@ using System.Text.Json;
 
 using Microsoft.Extensions.AI;
 
+using RealynxBot.Extensions;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM.ChatClients;
 
@@ -56,13 +57,12 @@ namespace RealynxBot.Services.LLM {
             //for (var x = 0; x == 0 || await ShouldExecuteToolsAgain(toolPromptChain, x); x++) {
             _logger.Debug("Executing an AI cycle.");
 
-            var chatClientResponse = await _chatClient.CompleteAsync(toolPromptChain, new ChatOptions() {
+            responseMessage = await _chatClient.GetTextResponse(toolPromptChain, new ChatOptions() {
                 Tools = _aiFunctions,
                 ToolMode = ChatToolMode.RequireAny,
                 Temperature = 0f
-            }, new CancellationTokenSource().Token);
+            });
 
-            responseMessage = chatClientResponse.Message.Text ?? string.Empty;
             //}
 
             return responseMessage;
@@ -89,11 +89,10 @@ namespace RealynxBot.Services.LLM {
             };
 
             thoughtContext.AddRange(contextChannel);
-            var chatCompletion = await _chatClient.CompleteAsync(thoughtContext, new ChatOptions() {
+            var newContext = await _chatClient.GetTextResponse(thoughtContext, new ChatOptions() {
                 Temperature = 0.02f,
             });
 
-            var newContext = chatCompletion.Message.Text ?? string.Empty;
             return new ChatMessage(ChatRole.System, newContext);
         }
 
@@ -130,13 +129,12 @@ namespace RealynxBot.Services.LLM {
             """;
             var jsonSchemaelement = JsonSerializer.Deserialize<JsonElement>(jsonSchemaString);
 
-            var chatCompletion = await _chatClient.CompleteAsync(thoughtContext, new ChatOptions() {
+            var thoughtMessage = await _chatClient.GetTextResponse(thoughtContext, new ChatOptions() {
                 MaxOutputTokens = 20,
                 Temperature = 0f,
                 ResponseFormat = ChatResponseFormat.ForJsonSchema(jsonSchemaelement),
             });
 
-            var thoughtMessage = chatCompletion.Message.Text ?? string.Empty;
             try {
                 jsonResponse = (dynamic)JsonSerializer.Deserialize(thoughtMessage, jsonResponse.GetType());
             }

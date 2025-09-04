@@ -4,6 +4,7 @@ using System.Text.Json;
 
 using Microsoft.Extensions.AI;
 
+using RealynxBot.Extensions;
 using RealynxBot.Services.Interfaces;
 
 namespace RealynxBot.Services.LLM {
@@ -60,19 +61,18 @@ namespace RealynxBot.Services.LLM {
             var chatContext = GetChatContext(identSeed);
             PruneChatHistory(identSeed);
 
-            ChatCompletion chatCompletion;
+            var responseMessage = string.Empty;
             if (schema is JsonElement jsonSchemaElement) {
                 _logger.Debug($"Infrencing Json LLM Request");
-                chatCompletion = await chatClient.CompleteAsync(chatContext, new ChatOptions() {
+                responseMessage = await chatClient.GetTextResponse(chatContext, new ChatOptions() {
                     ResponseFormat = ChatResponseFormat.ForJsonSchema(jsonSchemaElement)
                 });
             }
             else {
                 _logger.Debug($"Infrencing LLM Request");
-                chatCompletion = await chatClient.CompleteAsync(chatContext);
+                responseMessage = await chatClient.GetTextResponse(chatContext);
             }
 
-            var responseMessage = chatCompletion.Message.Text ?? string.Empty;
             chatContext.Add(new ChatMessage(ChatRole.Assistant, responseMessage));
 
             return responseMessage;
@@ -85,9 +85,8 @@ namespace RealynxBot.Services.LLM {
 
             chatContext.Add(chatMessage);
             _logger.Debug($"Prompting LLM: '{chatMessage.Text}'");
-            var chatCompletion = await chatClient.CompleteAsync(chatContext);
+            var responseMessage = await chatClient.GetTextResponse(chatContext);
 
-            var responseMessage = chatCompletion.Message.Text ?? string.Empty;
             chatContext.Add(new ChatMessage(ChatRole.Assistant, responseMessage));
 
             return responseMessage;

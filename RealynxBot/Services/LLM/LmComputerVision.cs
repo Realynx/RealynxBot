@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.AI;
 
+using RealynxBot.Extensions;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM.ChatClients;
 
@@ -17,10 +18,10 @@ namespace RealynxBot.Services.LLM {
             var thoughtContext = new List<ChatMessage>();
 
             thoughtContext.AddRange(chatContext);
-            thoughtContext.Add(new ChatMessage(ChatRole.User, [new ImageContent(imageData, mimeType)]));
+            // thoughtContext.Add(new ChatMessage(ChatRole.User, [new ImageContent(imageData, mimeType)]));
 
-            var llmResponse = await _chatClient.CompleteAsync(thoughtContext);
-            return llmResponse.Message.Text ?? string.Empty;
+            var llmResponse = await _chatClient.GetTextResponse(thoughtContext);
+            return llmResponse;
         }
     }
 }

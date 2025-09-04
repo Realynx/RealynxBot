@@ -5,6 +5,7 @@ using Google.Apis.CustomSearchAPI.v1.Data;
 
 using Microsoft.Extensions.AI;
 
+using RealynxBot.Extensions;
 using RealynxBot.Models.Config;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM.ChatClients;
@@ -55,9 +56,7 @@ namespace RealynxBot.Services.LLM.Gpt {
             lmContext.Add(new ChatMessage(ChatRole.System, websiteTextualContent));
             _lmPersonalityService.AddPersonalityContext(lmContext);
 
-            var clientResult = await _chatClient.CompleteAsync(lmContext);
-            var chatMessage = clientResult.Message.Text ?? "GPT refused to complete the chat";
-
+            var chatMessage = await _chatClient.GetTextResponse(lmContext);
             return chatMessage;
         }
 
@@ -95,8 +94,7 @@ namespace RealynxBot.Services.LLM.Gpt {
             lmContext.Add(new ChatMessage(ChatRole.System, string.Join(Environment.NewLine, extractedWebContents)));
             _lmPersonalityService.AddPersonalityContext(lmContext);
 
-            var chatCompletion = await _chatClient.CompleteAsync(lmContext);
-            var chatMessage = chatCompletion.Message.Text;
+            var chatMessage = await _chatClient.GetTextResponse(lmContext);
             return chatMessage;
         }
 

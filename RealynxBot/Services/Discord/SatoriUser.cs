@@ -7,6 +7,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Hosting;
 
+using RealynxBot.Extensions;
 using RealynxBot.Services.Discord.Interfaces;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM;
@@ -31,7 +32,7 @@ namespace RealynxBot.Services.Discord {
         private readonly IDiscordResponseService _discordResponseService;
 
         public SatoriUser(ILogger logger, DiscordSocketClient discordSocketClient,
-            IDiscordResponseService discordResponseService, OllamaUserChatClient ollamaChatClient,
+            IDiscordResponseService discordResponseService, OllamaUserChatClient OllamaApiClient,
             ILmPersonalityService lmPersonalityService, ILmToolInvoker lmToolInvoker,
             IGlobalChatContext globalChatContext, ILmStatusGenerator lmStatusGenerator,
             ILmContexAwareness lmContexAwareness, ILmComputerVision lmComputerVision) {
@@ -44,7 +45,7 @@ namespace RealynxBot.Services.Discord {
             _lmStatusGenerator = lmStatusGenerator;
             _lmContexAwareness = lmContexAwareness;
             _lmComputerVision = lmComputerVision;
-            _chatClient = ollamaChatClient.ChatClient;
+            _chatClient = OllamaApiClient.ChatClient;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken) {
@@ -252,11 +253,10 @@ namespace RealynxBot.Services.Discord {
                 Now, using this prompt, the assistant should generate a random thought according to the rules and tone variety above.
                 """));
 
-            var chatCompletion = await _chatClient.CompleteAsync(thoughtContext, new ChatOptions() {
+            var thoughtMessage = await _chatClient.GetTextResponse(thoughtContext, new ChatOptions() {
                 Temperature = 1.0f
             });
 
-            var thoughtMessage = chatCompletion.Message.Text ?? string.Empty;
             await FollowUpChunkedMessage(channel, thoughtMessage);
         }
     }

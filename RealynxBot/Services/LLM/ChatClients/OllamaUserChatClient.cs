@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.AI;
 
+using OllamaSharp;
+
 using RealynxBot.Models.Config;
 
 namespace RealynxBot.Services.LLM.ChatClients {
@@ -11,9 +13,7 @@ namespace RealynxBot.Services.LLM.ChatClients {
 
         public OllamaUserChatClient(AiChatClientSettings aiChatClientSettings) {
             _aiChatClientSettings = aiChatClientSettings;
-            _chatClient = new OllamaChatClient(_aiChatClientSettings.HttpEndpoint, modelId: _aiChatClientSettings.ChatModel)
-                .AsBuilder()
-                .Build();
+            _chatClient = new OllamaApiClient(_aiChatClientSettings.HttpEndpoint, defaultModel: _aiChatClientSettings.ChatModel);
         }
     }
 }

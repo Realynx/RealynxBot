@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.AI;
 
+using RealynxBot.Extensions;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM.ChatClients;
 
@@ -53,12 +54,12 @@ namespace RealynxBot.Services.LLM {
         public async Task<string> CreateQuery(string prompt) {
             var queryContext = LanguageModelContext(prompt);
 
-            var chatCompletion = await _chatClient.CompleteAsync(queryContext, new ChatOptions() {
+            var chatCompletion = await _chatClient.GetTextResponse(queryContext, new ChatOptions() {
                 Temperature = 0.03f,
                 MaxOutputTokens = 50
             });
 
-            return chatCompletion.Message.Text ?? string.Empty;
+            return chatCompletion;
         }
     }
 }

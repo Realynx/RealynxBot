@@ -1,9 +1,8 @@
 ﻿using System.Text.Json;
 
-using Discord.WebSocket;
-
 using Microsoft.Extensions.AI;
 
+using RealynxBot.Extensions;
 using RealynxBot.Services.Interfaces;
 using RealynxBot.Services.LLM.ChatClients;
 
@@ -62,13 +61,12 @@ namespace RealynxBot.Services.LLM {
             """;
             var jsonSchemaelement = JsonSerializer.Deserialize<JsonElement>(jsonSchemaString);
 
-            var chatCompletion = await _chatClient.CompleteAsync(thoughtContext, new ChatOptions() {
+            var thoughtMessage = await _chatClient.GetTextResponse(thoughtContext, new ChatOptions() {
                 MaxOutputTokens = 20,
                 Temperature = 0f,
                 ResponseFormat = ChatResponseFormat.ForJsonSchema(jsonSchemaelement, "Should RespondObject"),
             });
 
-            var thoughtMessage = chatCompletion.Message.Text ?? string.Empty;
             try {
                 jsonResponse = (dynamic)JsonSerializer.Deserialize(thoughtMessage, jsonResponse.GetType());
             }
@@ -102,7 +100,7 @@ namespace RealynxBot.Services.LLM {
                 new ChatMessage(ChatRole.System, $"""
                 Available Tools:
                 {string.Join("\n",
-                    _lmToolInvoker.GetTools.Select(i=>$"Function Name: {((AIFunction)i).Metadata.Name} - Description: {((AIFunction)i).Metadata.Description}"))}
+                    _lmToolInvoker.GetTools.Select(i=>$"Function Name: {((AIFunction)i).Name} - Description: {((AIFunction)i).Description}"))}
 
                 """)
             };
@@ -126,12 +124,11 @@ namespace RealynxBot.Services.LLM {
             """;
             var jsonSchemaElement = JsonSerializer.Deserialize<JsonElement>(jsonSchemaString);
 
-            var chatCompletion = await _chatClient.CompleteAsync(thoughtContext, new ChatOptions() {
+            var thoughtMessage = await _chatClient.GetTextResponse(thoughtContext, new ChatOptions() {
                 MaxOutputTokens = 8,
                 Temperature = 0f,
                 ResponseFormat = ChatResponseFormat.ForJsonSchema(jsonSchemaElement),
             });
-            var thoughtMessage = chatCompletion.Message.Text ?? string.Empty;
 
             var jsonResponse = new { Tools = false };
             try {
